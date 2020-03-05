@@ -1,0 +1,1 @@
+This directory will hold files that are static. For example, any images or icons.
