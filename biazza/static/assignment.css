@@ -1,0 +1,17 @@
+#mainContainer {
+	padding-top: 2%;
+	padding-left: 3.5%;
+	padding-right: 3.5%;
+}
+
+#uploadButton {
+	font-size: 2em;
+}
+
+#pinnedGrid {
+	padding-top: 0.8%;
+}
+
+.pad {
+	margin-top: 2%;
+}
