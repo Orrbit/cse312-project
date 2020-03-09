@@ -1,0 +1,47 @@
+@media (min-width: 1200px){
+    .sidebar {
+        width: 400px;
+    }
+}
+
+.wrapper {
+    display: flex;
+    width: 100%;
+}
+
+.sidebar {
+    min-height: 100vh;
+    max-height: 100vh;
+    /* overflow-y: auto; */
+}
+
+.content {
+    width: inherit;
+    max-height: 100vh;
+}
+
+.message-container {
+    transform: rotate(0);
+}
+
+.message-box {
+    resize: none;
+    transition: .2s;
+}
+
+.message {
+    max-width: 50%;
+}
+
+.scroll-view {
+    overflow-y: auto;
+    max-height: 100vh;
+}
+
+.btn-ico {
+    padding: 0px;
+    height: 36px;
+    width: 36px;
+    text-align: center;
+}
+
