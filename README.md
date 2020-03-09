@@ -95,8 +95,9 @@ Done using docker. You can follow the steps mentioned in the section above "Inst
 * **Shazmaan Malek** - *Initial work* - [Shazmaan](https://github.com/Shazmaan)
 * **Anant Patni** - *Initial work* - [anantpat](https://github.com/anantpat)
 
-## License <if needed>
+## License 
 
+<if needed>
 This project is licensed under the <license> - see the [LICENSE.md](LICENSE.md) file for details
 
 ## Acknowledgments
