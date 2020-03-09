@@ -1,0 +1,168 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <title>My Webpage</title>
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css" integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm" crossorigin="anonymous">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+    <link rel="stylesheet" href="../static/questions.css">
+    <script src="https://code.jquery.com/jquery-3.2.1.slim.min.js" integrity="sha384-KJ3o2DKtIkvYIK3UENzmM7KCkRr/rE9/Qpg6aAZGJwFDMVNA/GpGFF93hXpG5KkN" crossorigin="anonymous"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.9/umd/popper.min.js" integrity="sha384-ApNbgh9B+Y1QKtv3Rn7W3mgPxhU9K/ScQsAP7hUibX39j7fakFPskvXusvfa0b4Q" crossorigin="anonymous"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js" integrity="sha384-JZR6Spejh4U02d8jOt6vLEHfe/JQGiRRSQQxSfFWpi1MquVdAyjUar5+76PVCmYl" crossorigin="anonymous"></script>
+    <script src="../static/questions.js"></script>
+</head>
+<body class="h-100">
+    <div class="container-fluid h-100">
+        <div class="row h-100">
+            <aside class="list-container col-3 h-100">
+                <nav class="navbar navbar-dark bg-dark h-25">
+                    <span class="navbar-brand mb-0 h1">Questions</span>
+                    <form action="#" class="form-inline">
+                        <input class="form-control mr-sm-2" type="search" placeholder="Search" aria-label="Search">
+                        <button class="btn btn-outline-success my-2 my-sm-0" type="submit">Search</button>
+                    </form>
+                    <div class="dropdown">
+                        <button class="btn btn-secondary dropdown-toggle" type="button" id="dropdownMenuButton" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                            Dropdown button
+                          </button>
+                          <div class="dropdown-menu" aria-labelledby="dropdownMenuButton">
+                            <a class="dropdown-item" href="#">All Questions</a>
+                            <a class="dropdown-item" href="#">My Questions</a>
+                            <a class="dropdown-item" href="#">U.S. History</a>
+                            <a class="dropdown-item" href="#">Algebra</a>
+                          </div>
+                    </div>
+                </nav>
+                <ul class="question-list list-group h-50">
+                    <li class="list-group-item">What is a square root?</li>
+                    <li class="list-group-item active">Civil War Start Date</li>
+                    <li class="list-group-item">Has anyone seen my fidget spinner?</li>
+                    <li class="list-group-item">Qustion?</li>
+                    <li class="list-group-item">Qustion?</li>
+                    <li class="list-group-item">Qustion?</li>
+                    <li class="list-group-item">Qustion?</li>
+                    <li class="list-group-item">Qustion?</li>
+                    <li class="list-group-item">Qustion?</li>
+                    <li class="list-group-item">Qustion?</li>
+                    <li class="list-group-item">Qustion?</li>
+                    <li class="list-group-item">Qustion?</li>
+                    <li class="list-group-item">Qustion?</li>
+                    <li class="list-group-item">Qustion?</li>
+                    <li class="list-group-item">Qustion?</li>
+                    <li class="list-group-item">Qustion?</li>
+                    <li class="list-group-item">Qustion?</li>
+                    <li class="list-group-item">Qustion?</li>
+                    <li class="list-group-item">Qustion?</li>
+                    <li class="list-group-item">Qustion?</li>
+                    <li class="list-group-item">Qustion?</li>
+                    <li class="list-group-item">Qustion?</li>
+                    <li class="list-group-item">Qustion?</li>
+                    <li class="list-group-item">Qustion?</li>
+                    <li class="list-group-item">Qustion?</li>
+                    <li class="list-group-item">Qustion?</li>
+                    <li class="list-group-item">Qustion?</li>
+                    <li class="list-group-item">Qustion?</li>
+                    <li class="list-group-item">Qustion?</li>
+                    <li class="list-group-item">Qustion?</li>
+                    <li class="list-group-item">Qustion?</li>
+                </ul>
+            </aside>
+            
+        
+            <section class='col-9'>
+                <div class="jumbotron jumbotron-fluid px-3" id='question'>
+                    <h1 class="display-4">Civil War Start Date</h1>
+                    <p class="lead">Submitted by Brian</p>
+                    <p class="lead">Date: 3/9/2020</p>
+                    <hr class="my-4">
+                    <p>
+                        I was just wondering when the Civil War officially started
+                    </p>
+                    <div class='comment-footer'>
+                        <button class="btn btn-primary float-right mx-2">
+                            <i class="fa fa-thumbs-up"></i>
+                            <span class="badge badge-light">4</span>
+                        </button>
+                        <button class="btn btn-primary float-right mx-2">
+                            <i class="fa fa-star"></i>
+                            <span class="badge badge-light">3</span>
+                        </button>
+                    </div>
+                </div>
+                <div id='question-thread'>
+                    <div class='other-comment bg-dark text-white'>
+                        <h4>Ms. McLearn</h4>
+                        <p class='comment-content'>
+                            It started on April 12, 1861
+                        </p>
+                        <div class='comment-footer'>
+                            <button class='btn btn-primary float-right mx-2'>
+                                <i class='fa fa-thumbs-up'></i>
+                                <span class='badge badge-light'>4</span>
+                            </button>
+                            <button class='btn btn-primary float-right mx-2'>
+                                <i class='fa fa-star'></i>
+                                <span class='badge badge-light'>3</span>
+                            </button>
+                        </div>
+                    </div>
+                    <div class='my-comment bg-light text-dark'>
+                        <h4>Brian</h4>
+                        <p>
+                            Wow, that is my birthday! Thank you.
+                        </p>
+                        <div class='comment-footer'>
+                            <button class="btn btn-primary float-right mx-2">
+                                <i class="fa fa-thumbs-up"></i>
+                                <span class="badge badge-light">4</span>
+                            </button>
+                            <button class="btn btn-primary float-right mx-2">
+                                <i class="fa fa-star"></i>
+                                <span class="badge badge-light">3</span>
+                            </button>
+                        </div>
+                    </div>
+                    <div class='other-comment bg-dark text-white'>
+                        <h4>Susie</h4>
+                        <p class='comment-content'>
+                            Omg, lets have a birthday party for Kyle.
+                        </p>
+                        <div class='comment-footer'>
+                            <button class="btn btn-primary float-right mx-2">
+                                <i class="fa fa-thumbs-up"></i>
+                                <span class="badge badge-light">4</span>
+                            </button>
+                            <button class="btn btn-primary float-right mx-2">
+                                <i class="fa fa-star"></i>
+                                <span class="badge badge-light">3</span>
+                            </button>
+                        </div>
+                    </div>
+                    <div class='other-comment bg-dark text-white'>
+                        <h4>Ms. McLearn</h4>
+                        <p class='comment-content'>
+                            Good idea Susie, we will do that.
+                        </p>
+                        <div class='comment-footer'>
+                            <button class="btn btn-primary float-right mx-2">
+                                <i class="fa fa-thumbs-up"></i>
+                                <span class="badge badge-light">4</span>
+                            </button>
+                            <button class="btn btn-primary float-right mx-2">
+                                <i class="fa fa-star"></i>
+                                <span class="badge badge-light">3</span>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+                <form action="" id="add-comment">
+                    <div class="form-group">
+                        <label for="comment-string">Send a response back</label>
+                        <textarea class="form-control" id="comment-string" rows="3" name="comment-string"></textarea>
+                    </div>
+                    <button type="submit" class="btn btn-primary float-right">Send</button>
+                </form>
+            </section>
+        </div>
+    </div>
+</body>
+</html>
