@@ -1,0 +1,35 @@
+.question-list{
+    max-height: 900px;
+    overflow:scroll;
+    -webkit-overflow-scrolling: touch;
+}
+
+html{
+    max-height: 100%;
+}
+
+body{
+    max-height: 100%;
+}
+
+.other-comment{
+    float: right;
+}
+
+.my-comment{
+    float: left;
+}
+
+.other-comment, .my-comment{
+    display: inline-block;
+    clear: both;
+    padding: 10px;
+    margin: 5px 10%;
+    min-width: 30%;
+}
+
+#question-thread{
+    max-height: 400px;
+    overflow:scroll;
+    -webkit-overflow-scrolling: touch;
+}
