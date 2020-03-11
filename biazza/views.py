@@ -9,12 +9,12 @@ def home():
 
 @app.route('/home')
 def home_page():
-   return app.send_static_file('index.html')
+   return render_template('index.html')
 
 
 @app.route('/home/messages')
 def messages():
-   return app.send_static_file('messages.html')
+   return render_template('messages.html')
 
 
 @app.route('/css/messages')
