@@ -5,11 +5,18 @@
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
 
-    <!-- Bootstrap CSS -->
-    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/css/bootstrap.min.css" integrity="sha384-Vkoo8x4CGsO3+Hhxv8T/Q5PaXtkKtu6ug5TOeNV6gBiFeWPGFN9MuhOf23Q9Ifjh" crossorigin="anonymous">
-
-    <link rel="stylesheet" href="/css/home">
     <title>&#127345;iazza</title>
+    <!-- Bootstrap CSS and fa-icon -->
+    <link rel="stylesheet" href="/include/bootstrap.css">
+    <link rel="stylesheet" href="/include/fontawesome/css/all.css">
+    <!-- Our custom CSS -->
+    <link rel="stylesheet" href="/home.css">
+
+    <!-- jQuery first, then Popper.js, then Bootstrap JS -->
+    <script src="/include/jquery.min.js"></script>
+    <script src="/include/bootstrap.js"></script>
+    <script src="/include/popper.min.js"></script>
+    <script src="/home.js"></script>
   </head>
   <body class="d-flex flex-column">
     
@@ -58,11 +65,10 @@
 
             <div class="collapse navbar-collapse" id="navbarSupportedContent">
                 <ul class="navbar-nav mr-auto">
-                    <li class="nav-item"><a class="nav-link" href="#">Questions</a></li>
-                    <li class="nav-item"><a class="nav-link" href="#">Messages</a></li>
-                    <li class="nav-item"><a class="nav-link" href="#">Assignments</a></li>
-                    <li class="nav-item"><a class="nav-link" href="#">Calendar</a></li>
-
+                    <li class="nav-item"><a class="nav-link iframe-sel" onclick="changeIFrame('/home/questions')">Questions</a></li>
+                    <li class="nav-item"><a class="nav-link iframe-sel" onclick="changeIFrame('/home/messages')">Messages</a></li>
+                    <li class="nav-item"><a class="nav-link iframe-sel" onclick="changeIFrame('/home/assignments')">Assignments</a></li>
+                    <li class="nav-item"><a class="nav-link iframe-sel" onclick="changeIFrame('/home/messages')">Calendar</a></li>
                 </ul>
             </div>
 
@@ -73,12 +79,5 @@
     <div class="container-fluid flex-grow-1" id="contentContainer">
         <iframe id="mainContent" src="/home/messages"></iframe>
     </div>
-
-    
-    <!-- Optional JavaScript -->
-    <!-- jQuery first, then Popper.js, then Bootstrap JS -->
-    <script src="https://code.jquery.com/jquery-3.4.1.slim.min.js" integrity="sha384-J6qa4849blE2+poT4WnyKhv5vZF5SrPo0iEjwBvKU7imGFAV0wwj1yYfoRSJoZ+n" crossorigin="anonymous"></script>
-    <script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.0/dist/umd/popper.min.js" integrity="sha384-Q6E9RHvbIyZFJoft+2mJbHaEWldlvI9IOYy5n3zV9zzTtmI3UksdQRVvoxMfooAo" crossorigin="anonymous"></script>
-    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/js/bootstrap.min.js" integrity="sha384-wfSDF2E50Y2D1uUdj0O3uMBJnjuUD4Ih7YwaYd1iqfktj0Uod8GCExl3Og8ifwB6" crossorigin="anonymous"></script>
   </body>
 </html>

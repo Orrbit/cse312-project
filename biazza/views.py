@@ -4,24 +4,21 @@ from biazza import app
 
 @app.route('/')
 def home():
-   return "hello world, biazza!"
-
+   return render_template("login.html")
 
 @app.route('/home')
 def home_page():
-   return render_template('index.html')
-
+   return render_template('home.html')
 
 @app.route('/home/messages')
 def messages():
    return render_template('messages.html')
 
+@app.route('/home/questions')
+def questions():
+   return render_template('questions.html')
 
-@app.route('/css/messages')
-def messages_css():
-   return app.send_static_file('messages.css')
+@app.route('/home/assignments')
+def assignments():
+   return render_template('assignments.html')
 
-
-@app.route('/css/home')
-def home_css():
-   return app.send_static_file('index.css')

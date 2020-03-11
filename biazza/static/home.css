@@ -17,3 +17,7 @@ html, body {
 .fill {
     height: 100%;
 }
+
+a.iframe-sel{
+    cursor: pointer;
+}

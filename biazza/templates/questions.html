@@ -1,20 +1,30 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <title>My Webpage</title>
-    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css" integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm" crossorigin="anonymous">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
-    <link rel="stylesheet" href="../static/questions.css">
-    <script src="https://code.jquery.com/jquery-3.2.1.slim.min.js" integrity="sha384-KJ3o2DKtIkvYIK3UENzmM7KCkRr/rE9/Qpg6aAZGJwFDMVNA/GpGFF93hXpG5KkN" crossorigin="anonymous"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.9/umd/popper.min.js" integrity="sha384-ApNbgh9B+Y1QKtv3Rn7W3mgPxhU9K/ScQsAP7hUibX39j7fakFPskvXusvfa0b4Q" crossorigin="anonymous"></script>
-    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js" integrity="sha384-JZR6Spejh4U02d8jOt6vLEHfe/JQGiRRSQQxSfFWpi1MquVdAyjUar5+76PVCmYl" crossorigin="anonymous"></script>
-    <script src="../static/questions.js"></script>
+
+    <!-- Required meta tags -->
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+
+    <title>Questions</title>
+    <!-- Bootstrap CSS and fa-icon -->
+    <link rel="stylesheet" href="/include/bootstrap.css">
+    <link rel="stylesheet" href="/include/fontawesome/css/all.css">
+    <!-- Our custom CSS -->
+    <link rel="stylesheet" href="/questions.css">
+
+    <!-- jQuery first, then Popper.js, then Bootstrap JS -->
+    <script src="/include/jquery.min.js"></script>
+    <script src="/include/bootstrap.js"></script>
+    <script src="/include/popper.min.js"></script>
+    <script src="/questions.js"></script>
+    
 </head>
-<body class="h-100">
-    <div class="container-fluid h-100">
-        <div class="row h-100">
-            <aside class="list-container col-3 h-100">
-                <nav class="navbar navbar-dark bg-dark h-25">
+<body>
+    <div class="container-fluid">
+        <div class="row">
+            <aside class="sidebar list-container col-3">
+                <nav class="navbar navbar-dark bg-dark">
                     <span class="navbar-brand mb-0 h1">Questions</span>
                     <form action="#" class="form-inline">
                         <input class="form-control mr-sm-2" type="search" placeholder="Search" aria-label="Search">
@@ -32,44 +42,31 @@
                           </div>
                     </div>
                 </nav>
-                <ul class="question-list list-group h-50">
+                <ul class="question-list list-group">
                     <li class="list-group-item">What is a square root?</li>
                     <li class="list-group-item active">Civil War Start Date</li>
                     <li class="list-group-item">Has anyone seen my fidget spinner?</li>
-                    <li class="list-group-item">Qustion?</li>
-                    <li class="list-group-item">Qustion?</li>
-                    <li class="list-group-item">Qustion?</li>
-                    <li class="list-group-item">Qustion?</li>
-                    <li class="list-group-item">Qustion?</li>
-                    <li class="list-group-item">Qustion?</li>
-                    <li class="list-group-item">Qustion?</li>
-                    <li class="list-group-item">Qustion?</li>
-                    <li class="list-group-item">Qustion?</li>
-                    <li class="list-group-item">Qustion?</li>
-                    <li class="list-group-item">Qustion?</li>
-                    <li class="list-group-item">Qustion?</li>
-                    <li class="list-group-item">Qustion?</li>
-                    <li class="list-group-item">Qustion?</li>
-                    <li class="list-group-item">Qustion?</li>
-                    <li class="list-group-item">Qustion?</li>
-                    <li class="list-group-item">Qustion?</li>
-                    <li class="list-group-item">Qustion?</li>
-                    <li class="list-group-item">Qustion?</li>
-                    <li class="list-group-item">Qustion?</li>
-                    <li class="list-group-item">Qustion?</li>
-                    <li class="list-group-item">Qustion?</li>
-                    <li class="list-group-item">Qustion?</li>
-                    <li class="list-group-item">Qustion?</li>
-                    <li class="list-group-item">Qustion?</li>
-                    <li class="list-group-item">Qustion?</li>
-                    <li class="list-group-item">Qustion?</li>
-                    <li class="list-group-item">Qustion?</li>
+                    <li class="list-group-item">Question?</li>
+                    <li class="list-group-item">Question?</li>
+                    <li class="list-group-item">Question?</li>
+                    <li class="list-group-item">Question?</li>
+                    <li class="list-group-item">Question?</li>
+                    <li class="list-group-item">Question?</li>
+                    <li class="list-group-item">Question?</li>
+                    <li class="list-group-item">Question?</li>
+                    <li class="list-group-item">Question?</li>
+                    <li class="list-group-item">Question?</li>
+                    <li class="list-group-item">Question?</li>
+                    <li class="list-group-item">Question?</li>
+                    <li class="list-group-item">Question?</li>
+                    <li class="list-group-item">Question?</li>
+                    <li class="list-group-item">Question?</li>
                 </ul>
             </aside>
             
         
-            <section class='col-9'>
-                <div class="jumbotron jumbotron-fluid px-3" id='question'>
+            <section class='col-9 selected-question'>
+                <div class="jumbotron jumbotron-fluid" id='question'>
                     <h1 class="display-4">Civil War Start Date</h1>
                     <p class="lead">Submitted by Brian</p>
                     <p class="lead">Date: 3/9/2020</p>
