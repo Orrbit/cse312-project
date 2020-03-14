@@ -13,11 +13,6 @@
     <!-- Our custom CSS -->
     <link rel="stylesheet" href="/questions.css">
 
-    <!-- jQuery first, then Popper.js, then Bootstrap JS -->
-    <script src="/include/jquery.min.js"></script>
-    <script src="/include/bootstrap.js"></script>
-    <script src="/include/popper.min.js"></script>
-    <script src="/questions.js"></script>
     
 </head>
 <body>
@@ -42,38 +37,34 @@
                           </div>
                     </div>
                 </nav>
-                <ul class="question-list list-group">
-                    <li class="list-group-item">What is a square root?</li>
-                    <li class="list-group-item active">Civil War Start Date</li>
-                    <li class="list-group-item">Has anyone seen my fidget spinner?</li>
-                    <li class="list-group-item">Question?</li>
-                    <li class="list-group-item">Question?</li>
-                    <li class="list-group-item">Question?</li>
-                    <li class="list-group-item">Question?</li>
-                    <li class="list-group-item">Question?</li>
-                    <li class="list-group-item">Question?</li>
-                    <li class="list-group-item">Question?</li>
-                    <li class="list-group-item">Question?</li>
-                    <li class="list-group-item">Question?</li>
-                    <li class="list-group-item">Question?</li>
-                    <li class="list-group-item">Question?</li>
-                    <li class="list-group-item">Question?</li>
-                    <li class="list-group-item">Question?</li>
-                    <li class="list-group-item">Question?</li>
-                    <li class="list-group-item">Question?</li>
-                </ul>
+                <div class="question-list list-group " role="tablist">
+                    <a class="list-group-item list-group-item-action" data-toggle="list" role="tab">What is a square root?</a>
+                    <a class="list-group-item list-group-item-action active" data-toggle="list" role="tab">Civil War Start Date</a>
+                    <a class="list-group-item list-group-item-action" data-toggle="list" role="tab">Has anyone seen my fidget spinner?</a>
+                    <a class="list-group-item list-group-item-action" data-toggle="list" role="tab">Question?</a>
+                    <a class="list-group-item list-group-item-action" data-toggle="list" role="tab">Question?</a>
+                    <a class="list-group-item list-group-item-action" data-toggle="list" role="tab">Question?</a>
+                    <a class="list-group-item list-group-item-action" data-toggle="list" role="tab">Question?</a>
+                    <a class="list-group-item list-group-item-action" data-toggle="list" role="tab">Question?</a>
+                    <a class="list-group-item list-group-item-action" data-toggle="list" role="tab">Question?</a>
+                    <a class="list-group-item list-group-item-action" data-toggle="list" role="tab">Question?</a>
+                    <a class="list-group-item list-group-item-action" data-toggle="list" role="tab">Question?</a>
+                    <a class="list-group-item list-group-item-action" data-toggle="list" role="tab">Question?</a>
+                    <a class="list-group-item list-group-item-action" data-toggle="list" role="tab">Question?</a>
+                    <a class="list-group-item list-group-item-action" data-toggle="list" role="tab">Question?</a>
+                    <a class="list-group-item list-group-item-action" data-toggle="list" role="tab">Question?</a>
+                    <a class="list-group-item list-group-item-action" data-toggle="list" role="tab">Question?</a>
+                    <a class="list-group-item list-group-item-action" data-toggle="list" role="tab">Question?</a>
+                    <a class="list-group-item list-group-item-action" data-toggle="list" role="tab">Question?</a>
+                    <a class="list-group-item list-group-item-action" data-toggle="list" role="tab">Question?</a>
+                    <a class="list-group-item list-group-item-action" data-toggle="list" role="tab">Question?</a>
+                    <a class="list-group-item list-group-item-action" data-toggle="list" role="tab">Question?</a>
+                </div>
             </aside>
             
         
-            <section class='col-9 selected-question'>
-                <div class="jumbotron jumbotron-fluid" id='question'>
-                    <h1 class="display-4">Civil War Start Date</h1>
-                    <p class="lead">Submitted by Brian</p>
-                    <p class="lead">Date: 3/9/2020</p>
-                    <hr class="my-4">
-                    <p>
-                        I was just wondering when the Civil War officially started
-                    </p>
+            <section class='col-9 card selected-question'>
+                <div class="jumbotron jumbotron-fluid card-header p-3" id='question'>
                     <div class='comment-footer'>
                         <button class="btn btn-primary float-right mx-2">
                             <i class="fa fa-thumbs-up"></i>
@@ -84,8 +75,15 @@
                             <span class="badge badge-light">3</span>
                         </button>
                     </div>
+                    <h1 class="display-4">Civil War Start Date</h1>
+                    <p class="lead">Submitted by Brian</p>
+                    <p class="lead">Date: 3/9/2020</p>
+                    <hr class="">
+                    <p>
+                        I was just wondering when the Civil War officially started
+                    </p>
                 </div>
-                <div id='question-thread'>
+                <div id='question-thread' class="card-body">
                     <div class='other-comment bg-dark text-white'>
                         <h4>Ms. McLearn</h4>
                         <p class='comment-content'>
@@ -151,7 +149,7 @@
                         </div>
                     </div>
                 </div>
-                <form action="" id="add-comment">
+                <form action="" id="add-comment" class="card-footer">
                     <div class="form-group">
                         <label for="comment-string">Send a response back</label>
                         <textarea class="form-control" id="comment-string" rows="3" name="comment-string"></textarea>
@@ -161,5 +159,10 @@
             </section>
         </div>
     </div>
+    <!-- jQuery first, then Popper.js, then Bootstrap JS -->
+    <script src="/include/jquery.min.js"></script>
+    <script src="/include/bootstrap.js"></script>
+    <script src="/include/popper.min.js"></script>
+    <script src="/questions.js"></script>
 </body>
 </html>

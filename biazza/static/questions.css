@@ -2,6 +2,8 @@
     max-height: 80vh;
     overflow:scroll;
     -webkit-overflow-scrolling: touch;
+    max-width: 100%;
+    overflow-x: hidden;
 }
 
 nav.navbar{
@@ -30,12 +32,16 @@ body{
     display: inline-block;
     clear: both;
     padding: 10px;
-    margin: 5px 10%;
-    min-width: 30%;
+    margin: 10px 0;
+    min-width: 25%;
 }
 
 #question{
     height: 30vh;
+}
+
+.selected-question{
+    height: 100vh;
 }
 
 #question-thread{
@@ -43,6 +49,8 @@ body{
     max-height: 50vh;
     overflow:scroll;
     -webkit-overflow-scrolling: touch;
+    max-width: 100%;
+    overflow-x: hidden;
 }
 
 #add-comment{
