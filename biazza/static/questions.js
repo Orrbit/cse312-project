@@ -19,4 +19,39 @@ $(document).ready(function(){
         </div>`
         $("#question-thread").append(html);
     });
+
+    $("#fileUploadButton").click(function(){
+        let files = document.getElementById("fileInp").files;
+
+        if(files.length == 0){
+            $("#fileUploadMessage").html("No files were selected for upload.");
+            $("#fileUploadMessage").css('color', 'red');
+        } else {
+            let uploadData = new FormData();
+            uploadData.append('file', files[0]);
+
+            $.ajax({
+                type: "POST",
+                mimeType: "multipart/form-data",
+                url: "/home/questions/files",
+                data: uploadData,
+                dataType: 'json',
+                cache: false,
+                processData: false,
+                contentType: false,
+                success: function(data) {
+                    console.log("UPLOAD SUCCESS: ", data);
+                    $('#fileUploadModal').modal('toggle');
+                    $("#fileUploadMessage").html("");
+
+                    let link = '<a href="' + data['href'] + '" target="_blank">' + data['filename'] + '</a>';
+
+                    $('#comment-string').html($('#comment-string').html() + link);
+                },
+                error: function(err) {
+                    console.log("ERROR: ", err);
+                }
+            })
+        }
+    })
 });
