@@ -12,49 +12,35 @@ This project is about creating an interactive medium for students and instructor
 5) Students can view different due dates via the calendar option. 
 6) Students can also post questions
 
-```
-insert video demo here.
-```
-
-Images for the above if needed...
-```
-images...
-```
+* <a href="https://www.youtube.com/watch?v=JzQQVPEuGzI&feature=youtu.be">Phase 1 Demo Link</a>
+* Phase 2 later
+* Phase 3 later
 
 ### Prerequisites
 
 Docker
 
-```
-Install Docker and the rest if we have any...
-```
+### Running the server
 
-### Installing
+In order to run the server, you simply need to follow these steps.
 
-To get the server up, build an image using:
+1. Clone the repository locally
+2. Navigate to the root of the project folder
+3. Enter the following to build the image
+    ```
+    docker-compose build
+    ```
+4. Enter the following to run an instance of the image
+    ```
+    docker-compose up -d
+    ```
 
-```
-docker build -t biazza-image:latest
-```
-And then run an instance of that image using
+From here you will be able to got to http://localhost:8000 to view the webpage.
 
-```
-docker run -d -p 8000:8000 biazza-image:latest
-```
-Verify that the image is running with port 8000 open using
-
-```
-docker ps -a
-```
-Navigate to localhost:8000
-
-And repeat above if you want to create multiple images
-
-```
-insert docker image example if needed.
-```
-
-<Insert docker image exmaple here if needed>
+If you need to connect to the MySQL image, you should be able to connect to the database using
+* Username: root
+* Password: password
+* Hostname: localhost:3306
 
 ## How to test
 
