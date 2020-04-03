@@ -5,7 +5,6 @@ from biazza import app
 import os
 
 
-
 @app.route('/')
 def home():
    return render_template("login.html")
