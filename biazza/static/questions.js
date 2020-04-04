@@ -19,13 +19,8 @@ $(document).ready(function(){
         </div>`
         $("#question-thread").append(html);
     });
-});
 
-
-var updateBtn = document.getElementsByClassName('updateCount');
-var count = document.getElementsByClassName('count');
-
-// Emit Events
-updateBtn.addEventListener('click', function(){
-    console.log('Like Button clicked!');
+    $("#updateCount").submit(function(){
+        console.log('Button Clicked!');
+    });
 });

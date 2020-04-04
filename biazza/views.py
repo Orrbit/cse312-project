@@ -3,7 +3,9 @@ from flask import Blueprint, flash, Markup, redirect, render_template, url_for
 from biazza import app
 
 # Socket.io stuffio
-from flask_socketio import SocketIO
+from flask_socketio import SocketIO, send, emit
+
+socketio = SocketIO(app)
 
 @app.route('/')
 def home():
@@ -25,3 +27,7 @@ def questions():
 def assignments():
    return render_template('assignments.html')
 
+
+@socketio.on('message')
+def handle_message(message):
+   print('Received message : ' + message)
