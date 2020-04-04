@@ -10,14 +10,14 @@ socket.on('connect', () => {
 });
 
 
-socket.on('question_comment', (data)=> {
+socket.on('question_comment', (data) => {
 
     console.log("question_comment: " + JSON.stringify(data));
 
     // let msg = "Hello World"
     let msg = data['comment'];
     let commentType = "other-comment bg-dark text-light";
-    if(data['myComment']){
+    if (data['myComment']) {
         commentType = 'my-comment bg-light text-dark';
     }
 
@@ -42,17 +42,17 @@ socket.on('question_comment', (data)=> {
 });
 
 
-$(document).ready(function(){
-    $("#add-comment").submit(function(){
+$(document).ready(function () {
+    $("#add-comment").submit(function () {
         const comment = $('#comment-string').html();
-        var data = {'comment': comment};
+        var data = { 'comment': comment };
 
         socket.emit('question_comment', data);
         return false;
     });
 
 
-    $(".updateCount").click(function(){
+    $(".updateCount").click(function () {
         console.log('Button Clicked!');
 
         let count = $(".updateCount span").text();
@@ -63,34 +63,34 @@ $(document).ready(function(){
         });
         console.log("Messag Sent with count : " + count);
     });
-});
 
-var currCount = 0;
 
-socket.on('updateCount', function(data){
+    var currCount = 0;
 
-    console.log("Recieved Message from server!");
+    socket.on('updateCount', function (data) {
 
-    var count = $(".updateCount span").html(data.number);
+        console.log("Recieved Message from server!");
 
-    currCount = data.number;
+        var count = $(".updateCount span").html(data.number);
 
-    console.log(currCount);
-});
+        currCount = data.number;
 
-socket.on('initialUpdate', function(data){
+        console.log(currCount);
+    });
 
-    console.log("Initial Update of \"all count\"");
+    socket.on('initialUpdate', function (data) {
 
-    var count = $(".updateCount span").html(data.number);
+        console.log("Initial Update of \"all count\"");
 
-    currCount = data.number;
-});
+        var count = $(".updateCount span").html(data.number);
 
-    $("#fileUploadButton").click(function(){
+        currCount = data.number;
+    });
+
+    $("#fileUploadButton").click(function () {
         let files = document.getElementById("fileInp").files;
 
-        if(files.length == 0){
+        if (files.length == 0) {
             $("#fileUploadMessage").html("No files were selected for upload.");
             $("#fileUploadMessage").css('color', 'red');
         } else {
@@ -106,7 +106,7 @@ socket.on('initialUpdate', function(data){
                 cache: false,
                 processData: false,
                 contentType: false,
-                success: function(data) {
+                success: function (data) {
                     console.log("UPLOAD SUCCESS: ", data);
                     $('#fileUploadModal').modal('toggle');
                     $("#fileUploadMessage").html("");
@@ -115,7 +115,7 @@ socket.on('initialUpdate', function(data){
 
                     $('#comment-string').html($('#comment-string').html() + link);
                 },
-                error: function(err) {
+                error: function (err) {
                     console.log("ERROR: ", err);
                 }
             })
@@ -123,4 +123,5 @@ socket.on('initialUpdate', function(data){
     });
 
 });
+
 

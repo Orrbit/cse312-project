@@ -5,13 +5,6 @@ from biazza import app
 import os
 
 
-import json, run
-
-# Socket.io stuffio
-from flask_socketio import SocketIO, send, emit
-
-socketio = SocketIO(app)
-
 @app.route('/')
 def home():
    return render_template("login.html")
@@ -32,38 +25,6 @@ def questions():
 def assignments():
    return render_template('assignments.html')
 
-
-# Socket stuff
-
-likes = 0 # going to be an array/dictionary when we make it for new users
-
-@socketio.on('connect') # when socket connects
-def on_connect():
-   print('Socket Connected')
-
-   likes = run.globalLikes # assign global likes to this environment likes
-
-   print('initial likes : ' + str(likes))
-
-   emit('initialUpdate', {'id_name' : '<enter identifier>', 'number': likes})
-
-@socketio.on('disconnect') # when socket dis-connects
-def on_disconnect():
-   print('Socket Disconnected')
-   # emit('initialUpdate', {'id_name' : '<enter identifier>', 'number': likes}) probably put a emit message for disconnection as well
-
-@socketio.on('message')
-def handle_message(message):
-   incoming_message = str(message)
-
-   print('Received message : ' + incoming_message + ' Likes : ' + str(message["number"]) + ' globalLikes : ' + str(run.globalLikes)) # receiving JSON data
-
-   # probably make this such that it works specific to the message identifier.
-
-   run.globalLikes = message["number"]
-   likes = run.globalLikes
-
-   emit('updateCount', message, broadcast = True) # BroadCast message to all clients
 
 @app.route('/home/questions/files', methods=['POST'])
 def upload_file_to_question():
