@@ -27,7 +27,14 @@ def questions():
 def assignments():
    return render_template('assignments.html')
 
+# Socket stuff
+
+@socketio.on('connect')
+def on_connect():
+   print('Socket Connected')
 
 @socketio.on('message')
 def handle_message(message):
-   print('Received message : ' + message)
+   print('Received message : ' + str(message)) # receiving JSON data
+
+   emit('updateCount', message)
