@@ -28,6 +28,11 @@ body{
     float: left;
 }
 
+.form-control {
+    resize: vertical;
+    overflow: auto;
+}
+
 .other-comment, .my-comment{
     display: inline-block;
     clear: both;
