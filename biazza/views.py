@@ -2,7 +2,7 @@
 from flask import Blueprint, flash, Markup, redirect, render_template, url_for
 from biazza import app
 
-import json
+import json, run
 
 # Socket.io stuffio
 from flask_socketio import SocketIO, send, emit
@@ -37,6 +37,8 @@ likes = 0 # going to be an array/dictionary when we make it for new users
 def on_connect():
    print('Socket Connected')
 
+   likes = run.globalLikes # assign global likes to this environment likes
+
    print('initial likes : ' + str(likes))
 
    emit('initialUpdate', {'id_name' : '<enter identifier>', 'number': likes})
@@ -50,10 +52,11 @@ def on_disconnect():
 def handle_message(message):
    incoming_message = str(message)
 
-   print('Received message : ' + incoming_message + ' Likes : ' + str(message["number"])) # receiving JSON data
+   print('Received message : ' + incoming_message + ' Likes : ' + str(message["number"]) + ' globalLikes : ' + str(run.globalLikes)) # receiving JSON data
 
    # probably make this such that it works specific to the message identifier.
 
-   likes = message["number"]
+   run.globalLikes = message["number"]
+   likes = run.globalLikes
 
-   emit('updateCount', message)
+   emit('updateCount', message, broadcast = True) # BroadCast message to all clients
