@@ -55,10 +55,14 @@ $(document).ready(function () {
     $(".updateCount").click(function () {
         console.log('Button Clicked!');
 
-        let count = $(".updateCount span").text();
+        let count = $(this).find("span").text();  // get span count
+
+        let parentId = $(this).parent().parent().attr("id");
+
+        console.log("Parent : " + parentId);
 
         socket.emit('message', {
-            id_name: "<enter idenitifier>",
+            id_name: parentId,
             number: parseInt(count) + 1
         });
         console.log("Messag Sent with count : " + count);
@@ -108,18 +112,18 @@ socket.on('updateCount', function (data) {
 
     console.log("Recieved Message from server!");
 
-    var count = $(".updateCount span").html(data.number);
+    var count = $("#" + data.id_name + " .updateCount span").html(data.number);
 
     currCount = data.number;
 
-    console.log(currCount);
+    console.log(data);
 });
 
 socket.on('initialUpdate', function (data) {
 
-    console.log("Initial Update of \"all count\"");
+    console.log("Initial Update of \"all count\"" + " id : " + data.id_name);
 
-    var count = $(".updateCount span").html(data.number);
+    var count = $("#" + data.id_name + " .updateCount span").html(data.number);
 
     console.log("Initial Count : " + data.number);
 

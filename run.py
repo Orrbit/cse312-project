@@ -4,7 +4,7 @@ from biazza import app, socketio
 import eventlet
 eventlet.monkey_patch()
 
-globalLikes = 0 # Probably going to keep track of all the likes. But will probably be a dictionary
+globalLikes = {} # Probably going to keep track of all the likes. But will probably be a dictionary
 
 if __name__ == "__main__":
     # app.run(debug=True, host='0.0.0.0', port=8000)

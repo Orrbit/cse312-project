@@ -20,7 +20,7 @@ def question_comment(data):
 
     # Socket stuff
 
-likes = 0 # going to be an array/dictionary when we make it for new users
+likes = {} # going to be an array/dictionary when we make it for new users
 
 @socketio.on('connect') # when socket connects
 def on_connect():
@@ -30,7 +30,9 @@ def on_connect():
 
    print('initial likes : ' + str(likes))
 
-   emit('initialUpdate', {'id_name' : '<enter identifier>', 'number': likes})
+   # send over all the likes from every user
+   for key in likes:
+      emit('initialUpdate', {'id_name' : key, 'number': likes[key]})
 
 @socketio.on('disconnect') # when socket dis-connects
 def on_disconnect():
@@ -45,7 +47,7 @@ def handle_message(message):
 
    # probably make this such that it works specific to the message identifier.
 
-   run.globalLikes = message["number"]
+   run.globalLikes[message["id_name"]] = message["number"]
    likes = run.globalLikes
 
    emit('updateCount', message, broadcast = True) # BroadCast message to all clients
