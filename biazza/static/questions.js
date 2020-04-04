@@ -1,3 +1,4 @@
+
 // questions = [] {id:<id>,poster:<poster>, title:<title>, date:<date>, post:<post>, comments:[]}
 
 
@@ -50,6 +51,42 @@ $(document).ready(function(){
         return false;
     });
 
+
+    $(".updateCount").click(function(){
+        console.log('Button Clicked!');
+
+        let count = $(".updateCount span").text();
+
+        socket.emit('message', {
+            id_name: "<enter idenitifier>",
+            number: parseInt(count) + 1
+        });
+        console.log("Messag Sent with count : " + count);
+    });
+});
+
+var currCount = 0;
+
+socket.on('updateCount', function(data){
+
+    console.log("Recieved Message from server!");
+
+    var count = $(".updateCount span").html(data.number);
+
+    currCount = data.number;
+
+    console.log(currCount);
+});
+
+socket.on('initialUpdate', function(data){
+
+    console.log("Initial Update of \"all count\"");
+
+    var count = $(".updateCount span").html(data.number);
+
+    currCount = data.number;
+});
+
     $("#fileUploadButton").click(function(){
         let files = document.getElementById("fileInp").files;
 
@@ -86,5 +123,4 @@ $(document).ready(function(){
     });
 
 });
-
 
