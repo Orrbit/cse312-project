@@ -64,29 +64,6 @@ $(document).ready(function () {
         console.log("Messag Sent with count : " + count);
     });
 
-
-    var currCount = 0;
-
-    socket.on('updateCount', function (data) {
-
-        console.log("Recieved Message from server!");
-
-        var count = $(".updateCount span").html(data.number);
-
-        currCount = data.number;
-
-        console.log(currCount);
-    });
-
-    socket.on('initialUpdate', function (data) {
-
-        console.log("Initial Update of \"all count\"");
-
-        var count = $(".updateCount span").html(data.number);
-
-        currCount = data.number;
-    });
-
     $("#fileUploadButton").click(function () {
         let files = document.getElementById("fileInp").files;
 
@@ -125,3 +102,26 @@ $(document).ready(function () {
 });
 
 
+var currCount = 0;
+
+socket.on('updateCount', function (data) {
+
+    console.log("Recieved Message from server!");
+
+    var count = $(".updateCount span").html(data.number);
+
+    currCount = data.number;
+
+    console.log(currCount);
+});
+
+socket.on('initialUpdate', function (data) {
+
+    console.log("Initial Update of \"all count\"");
+
+    var count = $(".updateCount span").html(data.number);
+
+    console.log("Initial Count : " + data.number);
+
+    currCount = data.number;
+});
