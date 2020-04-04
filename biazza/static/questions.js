@@ -26,8 +26,6 @@ $(document).ready(function(){
     $(".updateCount").click(function(){
         console.log('Button Clicked!');
 
-        soc
-
         let count = $(".updateCount span").text();
 
         socket.emit('message', {
@@ -51,7 +49,7 @@ socket.on('updateCount', function(data){
     console.log(currCount);
 });
 
-socket.on('intialUpdate', function(data){
+socket.on('initialUpdate', function(data){
 
     console.log("Initial Update of \"all count\"");
 

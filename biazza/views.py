@@ -2,6 +2,8 @@
 from flask import Blueprint, flash, Markup, redirect, render_template, url_for
 from biazza import app
 
+import json
+
 # Socket.io stuffio
 from flask_socketio import SocketIO, send, emit
 
@@ -29,12 +31,29 @@ def assignments():
 
 # Socket stuff
 
-@socketio.on('connect')
+likes = 0 # going to be an array/dictionary when we make it for new users
+
+@socketio.on('connect') # when socket connects
 def on_connect():
    print('Socket Connected')
 
+   print('initial likes : ' + str(likes))
+
+   emit('initialUpdate', {'id_name' : '<enter identifier>', 'number': likes})
+
+@socketio.on('disconnect') # when socket dis-connects
+def on_disconnect():
+   print('Socket Disconnected')
+   # emit('initialUpdate', {'id_name' : '<enter identifier>', 'number': likes}) probably put a emit message for disconnection as well
+
 @socketio.on('message')
 def handle_message(message):
-   print('Received message : ' + str(message)) # receiving JSON data
+   incoming_message = str(message)
+
+   print('Received message : ' + incoming_message + ' Likes : ' + str(message["number"])) # receiving JSON data
+
+   # probably make this such that it works specific to the message identifier.
+
+   likes = message["number"]
 
    emit('updateCount', message)
