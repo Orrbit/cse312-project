@@ -25,6 +25,7 @@ def questions():
 def assignments():
    return render_template('assignments.html')
 
+
 @app.route('/home/questions/files', methods=['POST'])
 def upload_file_to_question():
    file = request.files['file']
@@ -37,3 +38,4 @@ def upload_file_to_question():
 @app.route('/home/questions/files/<string:filename>')
 def return_file(filename):
    return send_from_directory(app.config['UPLOAD_FOLDER'], filename)
+

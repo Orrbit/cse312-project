@@ -13,6 +13,7 @@
     <script src="/include/popper.min.js"></script>
     <!-- Our custom CSS -->
     <link rel="stylesheet" href="/questions.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/2.3.0/socket.io.js"></script>
 
     
 </head>
@@ -89,11 +90,11 @@
             
         
             <section class='col-9 card selected-question'>
-                <div class="jumbotron jumbotron-fluid card-header p-3" id='question'>
+                <div class="jumbotron jumbotron-fluid card-header p-3" id='question'> <!-- I am guessing every question is going to have it's own unique ID -->
                     <div class='comment-footer'>
-                        <button class="btn btn-primary float-right mx-2">
+                        <button class="btn btn-primary float-right mx-2 updateCount">
                             <i class="fa fa-thumbs-up"></i>
-                            <span class="badge badge-light">4</span>
+                            <span id = "likes" class="badge badge-light">0</span>
                         </button>
                         <button class="btn btn-primary float-right mx-2">
                             <i class="fa fa-star"></i>
@@ -109,15 +110,15 @@
                     </p>
                 </div>
                 <div id='question-thread' class="card-body">
-                    <div class='other-comment bg-dark text-white'>
-                        <h4>Ms. McLearn</h4><button type="button" class="btn btn-light">Follow Me!</button>
+                    <div class='other-comment bg-dark text-white' id = "message1"> <!-- I am guessing every message is going to have its own unique ID -->
+                        <h4>Shazmaaaaan</h4><button type="button" class="btn btn-light">Follow Me!</button>
                         <p class='comment-content'>
                             It started on April 12, 1861
                         </p>
                         <div class='comment-footer'>
-                            <button class='btn btn-primary float-right mx-2'>
+                            <button class='btn btn-primary float-right mx-2 updateCount'> <!-- added updateCount as a class and count as a class -->
                                 <i class='fa fa-thumbs-up'></i>
-                                <span class='badge badge-light'>4</span>
+                                <span class='badge badge-light'>0</span>
                             </button>
                             <button class='btn btn-primary float-right mx-2'>
                                 <i class='fa fa-star'></i>
@@ -200,5 +201,6 @@
     <script src="/include/popper.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/2.3.0/socket.io.js"></script>
     <script src="/questions.js"></script>
+    <!-- <script src="/socket_stuff.js"></script> -->
 </body>
 </html>
