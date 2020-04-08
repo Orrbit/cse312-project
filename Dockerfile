@@ -1,13 +1,11 @@
 FROM ubuntu:latest
 
-RUN apt-get update
-
 # Set the home dir to /app and move into it
 ENV HOME /app
 WORKDIR /app
 
 # install python-pip and python-dev on ubuntu
-RUN apt-get install -y python3-pip python3-dev
+RUN apt-get update && apt-get install -y python3-pip python3-dev default-libmysqlclient-dev
 
 #copy everything from the current directory into the image /app dir
 COPY . .
@@ -19,6 +17,8 @@ RUN pip3 install -r requirements.txt
 # Allow port 8000 to be accessed
 EXPOSE 8000
 
-ENTRYPOINT [ "python3" ]
+ADD https://github.com/ufoscout/docker-compose-wait/releases/download/2.2.1/wait /wait
+RUN chmod +x /wait
 
-CMD [ "run.py" ]
+
+CMD  /wait && python3 run.py

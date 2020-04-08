@@ -6,12 +6,19 @@ services:
       - "8000:8000"
     volumes:
       - .:/app
+    links:
+      - db
+    depends_on:
+      - db
+    environment:
+      WAIT_HOSTS: db:3306
   db:
     image: mysql
     command: --default-authentication-plugin=mysql_native_password
     restart: always
     environment:
       MYSQL_ROOT_PASSWORD: password
+      MYSQL_DATABASE: biazza
     ports:
       - '3306:3306'
     expose:
