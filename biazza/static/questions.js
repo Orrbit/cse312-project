@@ -53,6 +53,7 @@ $(document).ready(function () {
             processData: false,
             contentType: false,
             cache: false,
+            data: userInput,
             success: function(data){
                 console.log("success");
                 // Clear the form
@@ -99,10 +100,6 @@ $(document).ready(function () {
                 mimeType: "multipart/form-data",
                 url: "/home/questions/files",
                 data: uploadData,
-                dataType: 'json',
-                cache: false,
-                processData: false,
-                contentType: false,
                 success: function (data) {
                     console.log("UPLOAD SUCCESS: ", data);
                     $('#fileUploadModal').modal('toggle');

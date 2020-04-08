@@ -5,6 +5,7 @@ from werkzeug.utils import secure_filename
 from biazza import app, ALLOWED_EXTENSIONS
 from biazza.models import Attachment, Comment, db
 import os
+import uuid
 
 
 @app.route('/')
@@ -34,6 +35,28 @@ def post_comment_to_question():
    # Get comment with request.get_data('comment-string')
    # Loop through files with request.files
 
+   if not os.path.exists(app.config['UPLOAD_FOLDER']):
+      os.makedirs(app.config['UPLOAD_FOLDER'])
+   
+   form_text = request.form['comment-string']
+   comment = Comment(text=form_text, likes=0)
+   db.session.add(comment)
+   db.session.commit()
+
+   attachments=[]
+
+   for file in request.files.getlist('attachments-input'):
+      client_file_name = escape(secure_filename(file.filename))
+      extension = os.path.splitext(client_file_name)[1]
+      server_file_name = uuid.uuid4().hex + extension
+      server_path = os.path.join(app.config['UPLOAD_FOLDER'], server_file_name)
+      attachment = Attachment(user_filename=client_file_name, path=server_path, comment_id=comment.id)
+      db.session.add(attachment)
+      db.session.commit()
+      attachments.append(attachment.id)
+      file.save(os.path.join(app.config['UPLOAD_FOLDER'], server_file_name))
+
+   return jsonify({'comment_id': comment.id, 'attachment': attachments})
 
    #socket emit to all listeners
 
@@ -49,13 +72,6 @@ def upload_file_to_question():
       flash('No selected file')
       return redirect(request.url)
    if file and allowed_file(file.filename):
-      filename = secure_filename(file.filename)
-      filename = escape(filename)
-      file.save(os.path.join(app.config['UPLOAD_FOLDER'], filename))
-      path_for_file = '/home/questions/files/'+filename
-      attachment = Attachment(filename=filename, path=path_for_file)
-      db.session.add(attachment)
-      db.session.commit()
       comment = Comment(text="Hello World", attachment_id=1, likes=1)
       db.session.add(comment)
       db.session.commit()
