@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
 
     <!-- Required meta tags -->
@@ -15,34 +16,36 @@
     <link rel="stylesheet" href="/questions.css">
     <script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/2.3.0/socket.io.js"></script>
 
-    
+
 </head>
+
 <body>
-    <div class="modal fade" id="fileUploadModal" tabindex="-1" role="dialog" aria-labelledby="fileUploadModalLabel" aria-hidden="true">
+    <div class="modal fade" id="fileUploadModal" tabindex="-1" role="dialog" aria-labelledby="fileUploadModalLabel"
+        aria-hidden="true">
         <div class="modal-dialog" role="document">
-          <div class="modal-content">
-            <div class="modal-header">
-              <h5 class="modal-title" id="exampleModalLabel">Upload a File</h5>
-              <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                <span aria-hidden="true">&times;</span>
-              </button>
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="exampleModalLabel">Upload a File</h5>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <div class="modal-body">
+                    <form>
+                        <div class="form-group">
+                            <label for="fileInp">Your file</label>
+                            <input type="file" class="form-control-file" id="fileInp">
+                        </div>
+                    </form>
+                    <p id="fileUploadMessage"></p>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                    <button type="button" class="btn btn-primary" id="fileUploadButton">Upload</button>
+                </div>
             </div>
-            <div class="modal-body">
-                <form>
-                    <div class="form-group">
-                      <label for="fileInp">Your file</label>
-                      <input type="file" class="form-control-file" id="fileInp">
-                    </div>
-                </form>
-                <p id="fileUploadMessage"></p>
-            </div>
-            <div class="modal-footer">
-              <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
-              <button type="button" class="btn btn-primary" id="fileUploadButton">Upload</button>
-            </div>
-          </div>
         </div>
-      </div>
+    </div>
     <div class="container-fluid">
         <div class="row">
             <aside class="sidebar list-container col-3">
@@ -53,20 +56,24 @@
                         <button class="btn btn-outline-success my-2 my-sm-0" type="submit">Search</button>
                     </form>
                     <div class="dropdown">
-                        <button class="btn btn-secondary dropdown-toggle" type="button" id="dropdownMenuButton" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                        <button class="btn btn-secondary dropdown-toggle" type="button" id="dropdownMenuButton"
+                            data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
                             Filter Questions
-                          </button>
-                          <div class="dropdown-menu" aria-labelledby="dropdownMenuButton">
+                        </button>
+                        <div class="dropdown-menu" aria-labelledby="dropdownMenuButton">
                             <a class="dropdown-item" href="#">All Questions</a>
                             <a class="dropdown-item" href="#">Friend History</a>
                             <a class="dropdown-item" href="#">My Questions</a>
-                          </div>
+                        </div>
                     </div>
                 </nav>
                 <div class="question-list list-group " role="tablist">
-                    <a class="list-group-item list-group-item-action" data-toggle="list" role="tab">What is a square root?</a>
-                    <a class="list-group-item list-group-item-action active" data-toggle="list" role="tab">Civil War Start Date</a>
-                    <a class="list-group-item list-group-item-action" data-toggle="list" role="tab">Has anyone seen my fidget spinner?</a>
+                    <a class="list-group-item list-group-item-action" data-toggle="list" role="tab">What is a square
+                        root?</a>
+                    <a class="list-group-item list-group-item-action active" data-toggle="list" role="tab">Civil War
+                        Start Date</a>
+                    <a class="list-group-item list-group-item-action" data-toggle="list" role="tab">Has anyone seen my
+                        fidget spinner?</a>
                     <a class="list-group-item list-group-item-action" data-toggle="list" role="tab">Question?</a>
                     <a class="list-group-item list-group-item-action" data-toggle="list" role="tab">Question?</a>
                     <a class="list-group-item list-group-item-action" data-toggle="list" role="tab">Question?</a>
@@ -87,36 +94,40 @@
                     <a class="list-group-item list-group-item-action" data-toggle="list" role="tab">Question?</a>
                 </div>
             </aside>
-            
-        
-            <section class='col-9 card selected-question'>
-                <div class="jumbotron jumbotron-fluid card-header p-3" id='question'> <!-- I am guessing every question is going to have it's own unique ID -->
-                    <div class='comment-footer'>
-                        <button class="btn btn-primary float-right mx-2 updateCount">
-                            <i class="fa fa-thumbs-up"></i>
-                            <span id = "likes" class="badge badge-light">0</span>
-                        </button>
-                        <button class="btn btn-primary float-right mx-2">
-                            <i class="fa fa-star"></i>
-                            <span class="badge badge-light">3</span>
-                        </button>
+
+
+            <section class='col-9 card h-100 selected-question'>
+
+                <div id='question-thread' class="card-body container scroll-view">
+                    <div class="jumbotron jumbotron-fluid  p-3" id='question'>
+                        <!-- I am guessing every question is going to have it's own unique ID -->
+                        <div class='comment-footer'>
+                            <button class="btn btn-primary float-right mx-2 updateCount">
+                                <i class="fa fa-thumbs-up"></i>
+                                <span id="likes" class="badge badge-light">0</span>
+                            </button>
+                            <button class="btn btn-primary float-right mx-2">
+                                <i class="fa fa-star"></i>
+                                <span class="badge badge-light">3</span>
+                            </button>
+                        </div>
+                        <h1 class="display-4">Civil War Start Date</h1>
+                        <p class="lead">Submitted by Brian</p>
+                        <p class="lead">Date: 3/9/2020</p>
+                        <hr class="">
+                        <p>
+                            I was just wondering when the Civil War officially started
+                        </p>
                     </div>
-                    <h1 class="display-4">Civil War Start Date</h1>
-                    <p class="lead">Submitted by Brian</p>
-                    <p class="lead">Date: 3/9/2020</p>
-                    <hr class="">
-                    <p>
-                        I was just wondering when the Civil War officially started
-                    </p>
-                </div>
-                <div id='question-thread' class="card-body">
-                    <div class='other-comment bg-dark text-white' id = "message1"> <!-- I am guessing every message is going to have its own unique ID -->
+                    <div class='other-comment bg-dark text-white' id="message1">
+                        <!-- I am guessing every message is going to have its own unique ID -->
                         <h4>Shazmaaaaan</h4><button type="button" class="btn btn-light">Follow Me!</button>
                         <p class='comment-content'>
                             It started on April 12, 1861
                         </p>
                         <div class='comment-footer'>
-                            <button class='btn btn-primary float-right mx-2 updateCount'> <!-- added updateCount as a class and count as a class -->
+                            <button class='btn btn-primary float-right mx-2 updateCount'>
+                                <!-- added updateCount as a class and count as a class -->
                                 <i class='fa fa-thumbs-up'></i>
                                 <span class='badge badge-light'>0</span>
                             </button>
@@ -147,7 +158,8 @@
                         <p class='comment-content'>
                             Omg, lets have a birthday party for Kyle.
                         </p>
-                        <img src="https://ih0.redbubble.net/image.315734074.6116/flat,750x,075,f-pad,750x1000,f8f8f8.u1.jpg" class="mr-3 img-thumbnail" height="64" width="64">
+                        <img src="https://ih0.redbubble.net/image.315734074.6116/flat,750x,075,f-pad,750x1000,f8f8f8.u1.jpg"
+                            class="mr-3 img-thumbnail" height="64" width="64">
                         <div class='comment-footer'>
                             <button class="btn btn-primary float-right mx-2">
                                 <i class="fa fa-thumbs-up"></i>
@@ -176,22 +188,29 @@
                         </div>
                     </div>
                 </div>
-                <form action="" id="add-comment" class="card-footer">
-                    <div class="btn-group dropleft float-right">
+
+                <div class="card-footer">
+                    <form action="/home/questions/comments" method="POST" id="add-comment" enctype="multipart/form-data">
+                        <!-- <div class="btn-group dropleft float-right">
                         <button type="button" class="btn btn-secondary dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
                             <i class="fas fa-ellipsis-v"></i>
                         </button>
                         <div class="dropdown-menu">
                             <a class="dropdown-item" href="#" data-toggle="modal" data-target="#fileUploadModal"><i class="fas fa-upload"></i>Upload a file</a>
                         </div>
-                    </div>
-                    <div class="form-group">
-                        <label for="comment-string">Send a response back</label>
-                        <div contenteditable="true" class="form-control" id="comment-string" name="comment-string" height></div>
-                        <!-- <textarea class="form-control" id="comment-string" rows="3" name="comment-string"></textarea> -->
-                    </div>
-                    <button type="submit" class="btn btn-primary float-right">Send</button>
-                </form>
+                    </div> -->
+                        <div class="form-group">
+                            <label for="comment-string">Send a response back</label>
+                            <!-- <div contenteditable="true" class="form-control" id="comment-string" name="comment-string" height></div> -->
+                            <textarea class="form-control" id="comment-string" rows="3"
+                                name="comment-string"></textarea>
+                        </div>
+                        <label for="attachments-input">Add attachments:</label>
+                        <input type="file" id="attachments-input" name="attachments-input" multiple>
+                        <button type="submit" class="btn btn-primary float-right">Send</button>
+                    </form>
+                </div>
+
             </section>
         </div>
     </div>
@@ -203,4 +222,5 @@
     <script src="/questions.js"></script>
     <!-- <script src="/socket_stuff.js"></script> -->
 </body>
+
 </html>

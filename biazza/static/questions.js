@@ -44,10 +44,26 @@ socket.on('question_comment', (data) => {
 
 $(document).ready(function () {
     $("#add-comment").submit(function () {
-        const comment = $('#comment-string').html();
-        var data = { 'comment': comment };
+        var form = $('#add-comment')[0];
+        var userInput = new FormData(form);
 
-        socket.emit('question_comment', data);
+        $.ajax({
+            type: "POST",
+            url: "/home/questions/comments",
+            processData: false,
+            contentType: false,
+            cache: false,
+            success: function(data){
+                console.log("success");
+                // Clear the form
+            },
+            error: function(err){
+                console.log("error with post");
+                // Provide some indication that there was an error
+            }
+        });
+
+
         return false;
     });
 
