@@ -46,12 +46,12 @@ body{
 }
 
 .selected-question{
-    height: 100vh;
+    max-height: 100vh;
 }
 
 #question-thread{
-    height: 40vh;
-    max-height: 50vh;
+    /* height: 40vh; */
+    /* max-height: 100vh; */
     overflow:scroll;
     -webkit-overflow-scrolling: touch;
     max-width: 100%;
@@ -60,4 +60,9 @@ body{
 
 #add-comment{
     max-height: 20vh;
+}
+
+
+.card-footer{
+    height: fit-content;
 }
