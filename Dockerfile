@@ -7,8 +7,11 @@ WORKDIR /app
 # install python-pip and python-dev on ubuntu
 RUN apt-get update && apt-get install -y python3-pip python3-dev default-libmysqlclient-dev
 
+RUN apt-get install -y python3-pip python3-dev
+
 #copy everything from the current directory into the image /app dir
 COPY . .
+
 
 RUN python3 -m pip install --upgrade pip
 

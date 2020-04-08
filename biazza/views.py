@@ -27,6 +27,18 @@ def questions():
 def assignments():
    return render_template('assignments.html')
 
+
+@app.route('/home/questions/comments', methods=['POST'])
+def post_comment_to_question():
+   # Eventually there needs to be some form of identifier included for the question that it is in response to
+   # Get comment with request.get_data('comment-string')
+   # Loop through files with request.files
+
+
+   #socket emit to all listeners
+
+
+#### WILL DELETE
 @app.route('/home/questions/files', methods=['POST'])
 def upload_file_to_question():
    if 'file' not in request.files:

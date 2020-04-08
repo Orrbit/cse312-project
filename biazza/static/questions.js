@@ -1,3 +1,4 @@
+
 // questions = [] {id:<id>,poster:<poster>, title:<title>, date:<date>, post:<post>, comments:[]}
 
 
@@ -9,14 +10,14 @@ socket.on('connect', () => {
 });
 
 
-socket.on('question_comment', (data)=> {
+socket.on('question_comment', (data) => {
 
     console.log("question_comment: " + JSON.stringify(data));
 
     // let msg = "Hello World"
     let msg = data['comment'];
     let commentType = "other-comment bg-dark text-light";
-    if(data['myComment']){
+    if (data['myComment']) {
         commentType = 'my-comment bg-light text-dark';
     }
 
@@ -41,19 +42,52 @@ socket.on('question_comment', (data)=> {
 });
 
 
-$(document).ready(function(){
-    $("#add-comment").submit(function(){
-        const comment = $('#comment-string').html();
-        var data = {'comment': comment};
+$(document).ready(function () {
+    $("#add-comment").submit(function () {
+        var form = $('#add-comment')[0];
+        var userInput = new FormData(form);
 
-        socket.emit('question_comment', data);
+        $.ajax({
+            type: "POST",
+            url: "/home/questions/comments",
+            processData: false,
+            contentType: false,
+            cache: false,
+            success: function(data){
+                console.log("success");
+                // Clear the form
+            },
+            error: function(err){
+                console.log("error with post");
+                // Provide some indication that there was an error
+            }
+        });
+
+
         return false;
     });
 
-    $("#fileUploadButton").click(function(){
+
+    $(".updateCount").click(function () {
+        console.log('Button Clicked!');
+
+        let count = $(this).find("span").text();  // get span count
+
+        let parentId = $(this).parent().parent().attr("id");
+
+        console.log("Parent : " + parentId);
+
+        socket.emit('message', {
+            id_name: parentId,
+            number: parseInt(count) + 1
+        });
+        console.log("Messag Sent with count : " + count);
+    });
+
+    $("#fileUploadButton").click(function () {
         let files = document.getElementById("fileInp").files;
 
-        if(files.length == 0){
+        if (files.length == 0) {
             $("#fileUploadMessage").html("No files were selected for upload.");
             $("#fileUploadMessage").css('color', 'red');
         } else {
@@ -69,7 +103,7 @@ $(document).ready(function(){
                 cache: false,
                 processData: false,
                 contentType: false,
-                success: function(data) {
+                success: function (data) {
                     console.log("UPLOAD SUCCESS: ", data);
                     $('#fileUploadModal').modal('toggle');
                     $("#fileUploadMessage").html("");
@@ -78,7 +112,7 @@ $(document).ready(function(){
 
                     $('#comment-string').html($('#comment-string').html() + link);
                 },
-                error: function(err) {
+                error: function (err) {
                     console.log("ERROR: ", err);
                 }
             })
@@ -88,3 +122,26 @@ $(document).ready(function(){
 });
 
 
+var currCount = 0;
+
+socket.on('updateCount', function (data) {
+
+    console.log("Recieved Message from server!");
+
+    var count = $("#" + data.id_name + " .updateCount span").html(data.number);
+
+    currCount = data.number;
+
+    console.log(data);
+});
+
+socket.on('initialUpdate', function (data) {
+
+    console.log("Initial Update of \"all count\"" + " id : " + data.id_name);
+
+    var count = $("#" + data.id_name + " .updateCount span").html(data.number);
+
+    console.log("Initial Count : " + data.number);
+
+    currCount = data.number;
+});
