@@ -1,14 +1,12 @@
+const socket = io();
 
-// questions = [] {id:<id>,poster:<poster>, title:<title>, date:<date>, post:<post>, comments:[]}
-
-
-
-const socket = io.connect('http://localhost:8000');
-
+//Socket Listeners
+//Log connection
 socket.on('connect', () => {
     console.log(socket.id);
 });
 
+//Receive comment
 socket.on('comment_emit', (data) => {
 
     console.log("comment: " + JSON.stringify(data));
@@ -40,17 +38,26 @@ socket.on('comment_emit', (data) => {
         ${attachmentString}
     </div>
     <div class='comment-footer'>
-        <button class='btn btn-primary float-right mx-2 like'>
-            <i class='fa fa-thumbs-up'></i>
-            <span class='badge badge-light'>${likes}</span>
-        </button>
+    <button class='btn btn-primary float-right mx-2 like'>
+    <i class='fa fa-thumbs-up'></i>
+    <span class='badge badge-light'>${likes}</span>
+    </button>
     </div>
     </div>`
     $("#question-thread").append(html);
+    $("#question-thread").scrollTop($("#question-thread").height());
 });
 
+//Receive Like
+socket.on('like_status', function (data) {
+    console.log("Recieved Message from server!");
+    console.log(data);
+
+    $("#comment-" + data.comment_id + " .like span").html(data.likes);
+});
 
 $(document).ready(function () {
+    //POST comment
     $("#add-comment").submit(function () {
         var form = $('#add-comment')[0];
         var userInput = new FormData(form);
@@ -75,8 +82,8 @@ $(document).ready(function () {
 
         return false;
     });
-
-
+    
+    //Emit like
     $(document).on("click", "button.like", function () {
         let count = $(this).find("span").text();
         let parentId = $(this).parent().parent().attr("id");
@@ -98,57 +105,4 @@ $(document).ready(function () {
         console.log("Parent : " + parentId);
         console.log("Messag Sent with count : " + count);
     });
-
-    $("#fileUploadButton").click(function () {
-        let files = document.getElementById("fileInp").files;
-
-        if (files.length == 0) {
-            $("#fileUploadMessage").html("No files were selected for upload.");
-            $("#fileUploadMessage").css('color', 'red');
-        } else {
-            let uploadData = new FormData();
-            uploadData.append('file', files[0]);
-
-            $.ajax({
-                type: "POST",
-                mimeType: "multipart/form-data",
-                url: "/home/questions/files",
-                data: uploadData,
-                success: function (data) {
-                    console.log("UPLOAD SUCCESS: ", data);
-                    $('#fileUploadModal').modal('toggle');
-                    $("#fileUploadMessage").html("");
-
-                    let link = '<a href="' + data['href'] + '" target="_blank">' + data['filename'] + '</a>';
-
-                    $('#comment-string').html($('#comment-string').html() + link);
-                },
-                error: function (err) {
-                    console.log("ERROR: ", err);
-                }
-            })
-        }
-    });
-
-});
-
-
-var currCount = 0;
-
-socket.on('like_status', function (data) {
-    console.log("Recieved Message from server!");
-    console.log(data);
-
-    $("#comment-" + data.comment_id + " .like span").html(data.likes);
-});
-
-socket.on('initialUpdate', function (data) {
-
-    console.log("Initial Update of \"all count\"" + " id : " + data.id_name);
-
-    var count = $("#" + data.id_name + " .updateCount span").html(data.number);
-
-    console.log("Initial Count : " + data.number);
-
-    currCount = data.number;
 });
