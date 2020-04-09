@@ -9,17 +9,25 @@ socket.on('connect', () => {
     console.log(socket.id);
 });
 
+socket.on('comment_emit', (data) => {
 
-socket.on('question_comment', (data) => {
+    console.log("comment: " + JSON.stringify(data));
 
-    console.log("question_comment: " + JSON.stringify(data));
-
-    // let msg = "Hello World"
-    let msg = data['comment'];
+    let msg = data['text'];
+    let likes = data['likes']
     let commentType = "other-comment bg-dark text-light";
-    if (data['myComment']) {
+    // We will need this conditional to be responsive in phase 3
+    if (true) {
         commentType = 'my-comment bg-light text-dark';
     }
+    let attachmentString = ""
+    data['attachments'].forEach(attachment => 
+        attachmentString = attachmentString + `
+        <a href='${attachment.path}' target='_blank'>
+            ${attachment.name}
+        </a>
+        `
+    );
 
 
     let html = `<div class='${commentType}'>
@@ -27,14 +35,13 @@ socket.on('question_comment', (data) => {
     <div class='comment-content'>
         ${msg}
     </div>
+    <div>
+        ${attachmentString}
+    </div>
     <div class='comment-footer'>
         <button class='btn btn-primary float-right mx-2'>
             <i class='fa fa-thumbs-up'></i>
-            <span class='badge badge-light'>0</span>
-        </button>
-        <button class='btn btn-primary float-right mx-2'>
-            <i class='fa fa-star'></i>
-            <span class='badge badge-light'>0</span>
+            <span class='badge badge-light'></span>
         </button>
     </div>
     </div>`

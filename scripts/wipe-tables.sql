@@ -1,0 +1,2 @@
+DELETE FROM attachment WHERE 1=1;
+DELETE FROM comment WHERE 1=1;

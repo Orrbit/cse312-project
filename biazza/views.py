@@ -4,6 +4,7 @@ from werkzeug.utils import secure_filename
 #from biazza.database import db_session
 from biazza import app, ALLOWED_EXTENSIONS
 from biazza.models import Attachment, Comment, db
+from biazza.socket_handlers import emit_comment
 import os
 import uuid
 
@@ -44,45 +45,21 @@ def post_comment_to_question():
    db.session.commit()
 
    attachments=[]
-
    for file in request.files.getlist('attachments-input'):
-      client_file_name = escape(secure_filename(file.filename))
-      extension = os.path.splitext(client_file_name)[1]
-      server_file_name = uuid.uuid4().hex + extension
-      server_path = os.path.join(app.config['UPLOAD_FOLDER'], server_file_name)
-      attachment = Attachment(user_filename=client_file_name, path=server_path, comment_id=comment.id)
-      db.session.add(attachment)
-      db.session.commit()
-      attachments.append(attachment.id)
-      file.save(os.path.join(app.config['UPLOAD_FOLDER'], server_file_name))
-
-   return jsonify({'comment_id': comment.id, 'attachment': attachments})
-
-   #socket emit to all listeners
-
-
-#### WILL DELETE
-@app.route('/home/questions/files', methods=['POST'])
-def upload_file_to_question():
-   if 'file' not in request.files:
-      flash('No file part')
-      return redirect(request.url)
-   file = request.files['file']
-   if file.filename == '':
-      flash('No selected file')
-      return redirect(request.url)
-   if file and allowed_file(file.filename):
-      comment = Comment(text="Hello World", attachment_id=1, likes=1)
-      db.session.add(comment)
-      db.session.commit()
-      
-
-      return jsonify({'filename': filename, 'href': path_for_file})
-   
-
-@app.route('/home/questions/files/<string:filename>')
-def return_file(filename):
-   return send_from_directory(app.config['UPLOAD_FOLDER'], filename)
+      if file.filename != '':
+         client_file_name = escape(secure_filename(file.filename))
+         extension = os.path.splitext(client_file_name)[1]
+         server_file_name = uuid.uuid4().hex + extension
+         server_path = os.path.join(app.config['UPLOAD_FOLDER'], server_file_name)
+         href_path = remove_prefix(server_path, "/app/biazza/static")
+         attachment = Attachment(user_filename=client_file_name, path=href_path, comment_id=comment.id)
+         db.session.add(attachment)
+         db.session.commit()
+         attachments.append(attachment)
+         file.save(os.path.join(app.config['UPLOAD_FOLDER'], server_file_name))
+         print("Attachment saved: " + repr(attachment))
+   emit_comment(comment, attachments)
+   return jsonify({'success':True}) 
 
 #when a connection closes, the db session will also close
 @app.teardown_appcontext
@@ -93,3 +70,6 @@ def shutdown_session(exception=None):
 def allowed_file(filename):
     return '.' in filename and \
            filename.rsplit('.', 1)[1].lower() in ALLOWED_EXTENSIONS
+
+def remove_prefix(s, prefix):
+   return s[len(prefix):] if s.startswith(prefix) else s

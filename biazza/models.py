@@ -21,4 +21,4 @@ class Attachment(db.Model):
 
 
     def __repr__(self):
-        return '<Attachment %r>' % (self.file)
+        return '<Attachment %r>' % (self.path)

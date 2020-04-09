@@ -10,7 +10,7 @@ app = Flask(__name__,
             static_folder='static',
             template_folder='templates')
 
-UPLOAD_FOLDER = '/app/biazza/uploads'
+UPLOAD_FOLDER = '/app/biazza/static/uploads'
 ALLOWED_EXTENSIONS = {'txt', 'pdf', 'png', 'jpg', 'jpeg', 'gif'}
 app.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
