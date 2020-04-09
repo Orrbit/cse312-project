@@ -23,19 +23,18 @@ def messages():
 
 @app.route('/home/questions')
 def questions():
-   return render_template('questions.html')
+   comments = Comment.query.all()
+   for c in comments:
+      c.all_attachments = Attachment.query.filter(Attachment.comment_id == c.id)
+   return render_template('questions.html', comments=comments)
 
 @app.route('/home/assignments')
 def assignments():
    return render_template('assignments.html')
 
-
+#Used for sending the comment send form to the server
 @app.route('/home/questions/comments', methods=['POST'])
 def post_comment_to_question():
-   # Eventually there needs to be some form of identifier included for the question that it is in response to
-   # Get comment with request.get_data('comment-string')
-   # Loop through files with request.files
-
    if not os.path.exists(app.config['UPLOAD_FOLDER']):
       os.makedirs(app.config['UPLOAD_FOLDER'])
    

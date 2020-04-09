@@ -32,7 +32,7 @@ socket.on('comment_emit', (data) => {
 
 
     let html = `<div class='${commentType}' id='comment-${id}'>
-    <h4>Brian</h4>
+    <h4>Me</h4>
     <div class='comment-content'>
         ${msg}
     </div>

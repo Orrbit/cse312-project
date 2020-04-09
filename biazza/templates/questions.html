@@ -100,17 +100,6 @@
 
                 <div id='question-thread' class="card-body container scroll-view">
                     <div class="jumbotron jumbotron-fluid  p-3" id='question'>
-                        <!-- I am guessing every question is going to have it's own unique ID -->
-                        <div class='comment-footer'>
-                            <button class="btn btn-primary float-right mx-2 like">
-                                <i class="fa fa-thumbs-up"></i>
-                                <span id="likes" class="badge badge-light">0</span>
-                            </button>
-                            <button class="btn btn-primary float-right mx-2">
-                                <i class="fa fa-star"></i>
-                                <span class="badge badge-light">3</span>
-                            </button>
-                        </div>
                         <h1 class="display-4">Civil War Start Date</h1>
                         <p class="lead">Submitted by Brian</p>
                         <p class="lead">Date: 3/9/2020</p>
@@ -119,74 +108,28 @@
                             I was just wondering when the Civil War officially started
                         </p>
                     </div>
-                    <div class='other-comment bg-dark text-white' id="message1">
-                        <!-- I am guessing every message is going to have its own unique ID -->
-                        <h4>Shazmaaaaan</h4><button type="button" class="btn btn-light">Follow Me!</button>
+                    {% for comment in comments %}
+                    <div class='my-comment bg-light text-dark' id="comment-{{ comment.id }}">
+                        <h4>Me</h4>
                         <p class='comment-content'>
-                            It started on April 12, 1861
+                            {{ comment.text }}
                         </p>
+                        <div>
+                            {% for attachment in comment.all_attachments %}
+                            <a href='{{attachment.path}}' target='_blank'>
+                                {{attachment.user_filename}}
+                            </a>
+                            {% endfor %}
+                        </div>
                         <div class='comment-footer'>
-                            <button class='btn btn-primary float-right mx-2 updateCount'>
+                            <button class='btn btn-primary float-right mx-2 like'>
                                 <!-- added updateCount as a class and count as a class -->
                                 <i class='fa fa-thumbs-up'></i>
-                                <span class='badge badge-light'>0</span>
-                            </button>
-                            <button class='btn btn-primary float-right mx-2'>
-                                <i class='fa fa-star'></i>
-                                <span class='badge badge-light'>3</span>
+                                <span class='badge badge-light'>{{ comment.likes }}</span>
                             </button>
                         </div>
                     </div>
-                    <div class='my-comment bg-light text-dark'>
-                        <h4>Brian</h4>
-                        <p>
-                            Wow, that is my birthday! Thank you.
-                        </p>
-                        <div class='comment-footer'>
-                            <button class="btn btn-primary float-right mx-2">
-                                <i class="fa fa-thumbs-up"></i>
-                                <span class="badge badge-light">4</span>
-                            </button>
-                            <button class="btn btn-primary float-right mx-2">
-                                <i class="fa fa-star"></i>
-                                <span class="badge badge-light">3</span>
-                            </button>
-                        </div>
-                    </div>
-                    <div class='other-comment bg-dark text-white'>
-                        <h4>Susie </h4><button type="button" class="btn btn-light">Follow Me!</button>
-                        <p class='comment-content'>
-                            Omg, lets have a birthday party for Kyle.
-                        </p>
-                        <img src="https://ih0.redbubble.net/image.315734074.6116/flat,750x,075,f-pad,750x1000,f8f8f8.u1.jpg"
-                            class="mr-3 img-thumbnail" height="64" width="64">
-                        <div class='comment-footer'>
-                            <button class="btn btn-primary float-right mx-2">
-                                <i class="fa fa-thumbs-up"></i>
-                                <span class="badge badge-light">4</span>
-                            </button>
-                            <button class="btn btn-primary float-right mx-2">
-                                <i class="fa fa-star"></i>
-                                <span class="badge badge-light">3</span>
-                            </button>
-                        </div>
-                    </div>
-                    <div class='other-comment bg-dark text-white'>
-                        <h4>Ms. McLearn</h4><button type="button" class="btn btn-light">Follow Me!</button>
-                        <p class='comment-content'>
-                            Good idea Susie, we will do that.
-                        </p>
-                        <div class='comment-footer'>
-                            <button class="btn btn-primary float-right mx-2">
-                                <i class="fa fa-thumbs-up"></i>
-                                <span class="badge badge-light">4</span>
-                            </button>
-                            <button class="btn btn-primary float-right mx-2">
-                                <i class="fa fa-star"></i>
-                                <span class="badge badge-light">3</span>
-                            </button>
-                        </div>
-                    </div>
+                    {% endfor %}
                 </div>
 
                 <div class="card-footer">
