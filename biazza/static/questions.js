@@ -12,8 +12,12 @@ socket.on('comment_emit', (data) => {
     console.log("comment: " + JSON.stringify(data));
 
     let msg = data['text'];
-    let likes = data['likes']
-    let id = data['id']
+    msg = msg.replace(">","&gt;"); msg = msg.replace("<","&lt;"); msg = msg.replace("&", "&amp;");
+
+    console.log("MSG : " + msg);
+
+    let likes = data['likes'];
+    let id = data['id'];
     let commentType = "other-comment bg-dark text-light";
     // We will need this conditional to be responsive in phase 3
     if (true) {
@@ -61,6 +65,9 @@ $(document).ready(function () {
     $("#add-comment").submit(function () {
         var form = $('#add-comment')[0];
         var userInput = new FormData(form);
+        
+        console.log("User Input : "  + userInput);
+
 
         $.ajax({
             type: "POST",
