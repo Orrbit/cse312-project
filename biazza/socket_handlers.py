@@ -1,5 +1,6 @@
 from biazza import socketio
 from flask_socketio import emit
+from biazza.models import Comment, db
 import lxml.html, lxml.html.clean
 import run
 
@@ -16,12 +17,6 @@ def question_comment(data):
     emit('question_comment', {'comment': comment, 'myComment': False}, broadcast=True, include_self=False)
     emit('question_comment', {'comment': comment, 'myComment': True})
 
-
-
-    # Socket stuff
-
-likes = {} # going to be an array/dictionary when we make it for new users
-
 @socketio.on('connect') # when socket connects
 def on_connect():
    print('Socket Connected')
@@ -30,25 +25,32 @@ def on_connect():
 
    # send over all the likes from every user
    for key in likes:
-      emit('initialUpdate', {'id_name' :  key, 'number': likes[key]})
+      emit('initialUpdate', {'comment_id' :  key, 'number': likes[key]})
 
 @socketio.on('disconnect') # when socket dis-connects
 def on_disconnect():
    print('Socket Disconnected')
    # emit('initialUpdate', {'id_name' : '<enter identifier>', 'number': likes}) probably put a emit message for disconnection as well
 
-@socketio.on('message')
-def handle_message(message):
-   incoming_message = str(message)
+@socketio.on('like_click')
+def handle_message(data):
+   incoming_data = str(data)
 
-   print('Received message : ' + incoming_message + ' Likes : ' + str(message["number"]) + ' globalLikes : ' + str(run.globalLikes)) # receiving JSON data
+   print('Received message : ' + incoming_data + ' Is Like : ' + str(data["is_like"])) # receiving JSON data
 
-   # probably make this such that it works specific to the message identifier.
+   comment = Comment.query.get(data["comment_id"])
+   if data["is_like"]:
+      comment.likes = comment.likes + 1
+   else:
+      comment.likes = comment.likes - 1
+   db.session.commit()
 
-   run.globalLikes[message["id_name"]] = message["number"]
-   likes = run.globalLikes
+   like_obj = {
+      "comment_id": data["comment_id"],
+      "likes": comment.likes
+   }
 
-   emit('updateCount', message, broadcast = True) # BroadCast message to all clients
+   emit('like_status', like_obj, broadcast = True) # BroadCast message to all clients
 
 def emit_comment(comment, attachments):
    attachment_info = []

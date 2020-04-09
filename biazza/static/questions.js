@@ -15,6 +15,7 @@ socket.on('comment_emit', (data) => {
 
     let msg = data['text'];
     let likes = data['likes']
+    let id = data['id']
     let commentType = "other-comment bg-dark text-light";
     // We will need this conditional to be responsive in phase 3
     if (true) {
@@ -30,7 +31,7 @@ socket.on('comment_emit', (data) => {
     );
 
 
-    let html = `<div class='${commentType}'>
+    let html = `<div class='${commentType}' id='comment-${id}'>
     <h4>Brian</h4>
     <div class='comment-content'>
         ${msg}
@@ -39,9 +40,9 @@ socket.on('comment_emit', (data) => {
         ${attachmentString}
     </div>
     <div class='comment-footer'>
-        <button class='btn btn-primary float-right mx-2'>
+        <button class='btn btn-primary float-right mx-2 like'>
             <i class='fa fa-thumbs-up'></i>
-            <span class='badge badge-light'></span>
+            <span class='badge badge-light'>${likes}</span>
         </button>
     </div>
     </div>`
@@ -76,19 +77,25 @@ $(document).ready(function () {
     });
 
 
-    $(".updateCount").click(function () {
-        console.log('Button Clicked!');
-
-        let count = $(this).find("span").text();  // get span count
-
+    $(document).on("click", "button.like", function () {
+        let count = $(this).find("span").text();
         let parentId = $(this).parent().parent().attr("id");
-
+        let commentId = parentId.replace("comment-", "");
+        if($(this).is(':disabled')){
+            //We are handling the case that they are revoking a upvote
+            socket.emit('like_click', {
+                comment_id: commentId,
+                is_like: false
+            });
+            $(this).attr('disabled', false);
+        } else {
+            socket.emit('like_click', {
+                comment_id: commentId,
+                is_like: true
+            });
+            $(this).attr('disabled', true);
+        }
         console.log("Parent : " + parentId);
-
-        socket.emit('message', {
-            id_name: parentId,
-            number: parseInt(count) + 1
-        });
         console.log("Messag Sent with count : " + count);
     });
 
@@ -128,15 +135,11 @@ $(document).ready(function () {
 
 var currCount = 0;
 
-socket.on('updateCount', function (data) {
-
+socket.on('like_status', function (data) {
     console.log("Recieved Message from server!");
-
-    var count = $("#" + data.id_name + " .updateCount span").html(data.number);
-
-    currCount = data.number;
-
     console.log(data);
+
+    $("#comment-" + data.comment_id + " .like span").html(data.likes);
 });
 
 socket.on('initialUpdate', function (data) {
