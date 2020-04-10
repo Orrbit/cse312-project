@@ -6,6 +6,7 @@
     overflow-x: hidden;
 }
 
+
 nav.navbar{
     height: 20vh;
 }
@@ -42,11 +43,12 @@ body{
 }
 
 #question{
-    height: 30vh;
+    height: fit-content;
 }
 
 .selected-question{
     max-height: 100vh;
+    height: 100vh;
 }
 
 #question-thread{
@@ -65,4 +67,9 @@ body{
 
 .card-footer{
     height: fit-content;
+}
+
+.card {
+    min-height: 100vh;
+    height: 100vh;
 }
