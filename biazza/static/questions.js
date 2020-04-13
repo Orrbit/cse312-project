@@ -12,7 +12,7 @@ socket.on('comment_emit', (data) => {
     console.log("comment: " + JSON.stringify(data));
 
     let msg = data['text'];
-    msg = msg.replace(">","&gt;"); msg = msg.replace("<","&lt;"); msg = msg.replace("&", "&amp;");
+    // msg = msg.replace(">","&gt;"); msg = msg.replace("<","&lt;"); msg = msg.replace("&", "&amp;");
 
     console.log("MSG : " + msg);
 
