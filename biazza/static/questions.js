@@ -95,19 +95,19 @@ $(document).ready(function () {
         let count = $(this).find("span").text();
         let parentId = $(this).parent().parent().attr("id");
         let commentId = parentId.replace("comment-", "");
-        if($(this).is(':disabled')){
+        if($(this).hasClass('liked')){
             //We are handling the case that they are revoking a upvote
             socket.emit('like_click', {
                 comment_id: commentId,
                 is_like: false
             });
-            $(this).attr('disabled', false);
+            $(this).removeClass('liked')
         } else {
             socket.emit('like_click', {
                 comment_id: commentId,
                 is_like: true
             });
-            $(this).attr('disabled', true);
+            $(this).addClass('liked')
         }
         console.log("Parent : " + parentId);
         console.log("Messag Sent with count : " + count);
