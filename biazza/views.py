@@ -100,6 +100,13 @@ def get_question(q_id):
 def assignments():
    return render_template('assignments.html')
 
+def replace(text):
+   text = text.replace(">", "&gt;")
+   text = text.replace("<", "&lt;")
+   text = text.replace("&", "&amp;")
+
+   return text
+
 #Used for sending the comment send form to the server
 @app.route('/home/questions/<int:q_id>/comments', methods=['POST'])
 def post_comment_to_question(q_id):
@@ -107,7 +114,16 @@ def post_comment_to_question(q_id):
       os.makedirs(app.config['UPLOAD_FOLDER'])
    
    form_text = request.form['comment-string']
+
+   form_text  = replace(form_text)
+
+   print(form_text)
+   
    comment = Comment(text=form_text, likes=0, question_id=q_id)
+
+#  msg = msg.replace(">","&gt;"); msg = msg.replace("<","&lt;"); msg = msg.replace("&", "&amp;");
+#  </div><script>alert('PeePeePooPoo');</script>
+
    db.session.add(comment)
    db.session.commit()
 
