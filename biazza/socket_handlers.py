@@ -43,7 +43,24 @@ def emit_comment(comment, attachments):
       attachment_info.append(new_attachment)
    socketio.emit('comment_emit', {
       "id": comment.id,
+      "qid": comment.question_id,
       "text": comment.text,
       "likes": comment.likes,
       "attachments": attachment_info
    }, broadcast = True)
+
+
+def emit_question(question, attachments):
+   attachment_info = []
+   
+   for attachment in attachments:
+      new_attachment = {
+         "path": attachment.path,
+         "name": attachment.user_filename
+      }
+      attachment_info.append(new_attachment)
+   
+   socketio.emit('question_emit', {
+      "id": question.id,
+      "title": question.title,
+   }, broadcast=True)

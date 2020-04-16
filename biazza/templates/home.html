@@ -21,14 +21,48 @@
   <body class="d-flex flex-column">
     
     <div class="container-fluid">
-
+<!-- 
         <div class="row">
 
-            <div class="col-lg-9 my-auto">
+            
+
+        </div> -->
+
+        <nav class="navbar navbar-light bg-light navbar-expand-lg row">
+
+            <div class="col-lg-3 my-auto">
                 <h1>&#127345;iazza</h1>
             </div>
 
-            <div class="col-lg-3 my-auto">
+            
+
+            <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+
+            <div class="collapse navbar-collapse" id="navbarSupportedContent">
+                <div class="dropdown">
+                    <a class="navbar-brand dropdown-toggle" href="#" id="navbarDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                        CSE 312
+                    </a>
+                    <div class="dropdown-menu" aria-labelledby="navbarDropdown">
+                        <p class="dropdown-header">Courses as Student:</p>
+                        <a class="dropdown-item" href="#">CSE 421</a>
+                        <a class="dropdown-item" href="#">CSE 442</a>
+                        <div class="dropdown-divider"></div>
+                        <p class="dropdown-header">Courses as Instructor:</p>
+                        <a class="dropdown-item" href="#">CSE 250</a>
+                    </div>
+                </div>
+
+                <ul class="navbar-nav mr-auto">
+                    <li class="nav-item"><a class="nav-link iframe-sel" onclick="changeIFrame('/home/questions')">Questions</a></li>
+                    <li class="nav-item"><a class="nav-link iframe-sel" onclick="changeIFrame('/home/messages')">Messages</a></li>
+                    <li class="nav-item"><a class="nav-link iframe-sel" onclick="changeIFrame('/home/assignments')">Assignments</a></li>
+                </ul>
+            </div>
+
+            <div class="my-auto">
                 <div class="media float-right">
                     <img src="https://ih0.redbubble.net/image.315734074.6116/flat,750x,075,f-pad,750x1000,f8f8f8.u1.jpg" class="mr-3 img-thumbnail" 
                         height="64" width="64" >
@@ -42,34 +76,7 @@
                 </div>
             </div>
 
-        </div>
-
-        <nav class="navbar navbar-light bg-light navbar-expand-lg">
-            <div class="dropdown">
-                <a class="navbar-brand dropdown-toggle" href="#" id="navbarDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                    CSE 312
-                </a>
-                <div class="dropdown-menu" aria-labelledby="navbarDropdown">
-                    <p class="dropdown-header">Courses as Student:</p>
-                    <a class="dropdown-item" href="#">CSE 421</a>
-                    <a class="dropdown-item" href="#">CSE 442</a>
-                    <div class="dropdown-divider"></div>
-                    <p class="dropdown-header">Courses as Instructor:</p>
-                    <a class="dropdown-item" href="#">CSE 250</a>
-                </div>
-            </div>
-
-            <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
-                <span class="navbar-toggler-icon"></span>
-            </button>
-
-            <div class="collapse navbar-collapse" id="navbarSupportedContent">
-                <ul class="navbar-nav mr-auto">
-                    <li class="nav-item"><a class="nav-link iframe-sel" onclick="changeIFrame('/home/questions')">Questions</a></li>
-                    <li class="nav-item"><a class="nav-link iframe-sel" onclick="changeIFrame('/home/messages')">Messages</a></li>
-                    <li class="nav-item"><a class="nav-link iframe-sel" onclick="changeIFrame('/home/assignments')">Assignments</a></li>
-                </ul>
-            </div>
+            
 
         </nav>
 

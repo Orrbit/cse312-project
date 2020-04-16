@@ -1,10 +1,10 @@
 # This is where the routes are defined.
-from flask import Blueprint, flash, Markup, redirect, render_template, url_for, request, jsonify, escape, send_from_directory
+from flask import Blueprint, flash, Markup, redirect, render_template, url_for, request, Response, jsonify, escape, send_from_directory
 from werkzeug.utils import secure_filename
 #from biazza.database import db_session
 from biazza import app, ALLOWED_EXTENSIONS
-from biazza.models import Attachment, Comment, db
-from biazza.socket_handlers import emit_comment
+from biazza.models import Attachment, Comment, Question, db
+from biazza.socket_handlers import emit_comment, emit_question
 import os
 import uuid
 
@@ -21,25 +21,93 @@ def home_page():
 def messages():
    return render_template('messages.html')
 
-@app.route('/home/questions')
+@app.route('/home/questions', methods=['GET', 'POST'])
 def questions():
-   comments = Comment.query.all()
+
+   if request.method == 'GET':
+
+      questions = Question.query.all()
+      questions.reverse()
+
+      top_question = None
+      comments = []
+
+      if questions:
+         top_question = questions[0]
+         comments = Comment.query.filter(Comment.question_id == top_question.id)
+
+      for c in comments:
+         c.all_attachments = Attachment.query.filter(Attachment.comment_id == c.id)
+      return render_template('questions.html', comments=comments, questions=questions, top_question=top_question)
+
+   elif request.method == 'POST':
+      question_title = request.form['title-input']
+      question_contents = request.form['question-input']
+      
+      if len(question_title) > 0 and len(question_contents) > 0:
+         # Need to handle file uploads and clean input from users
+         question = Question(title=question_title, content=question_contents, likes=0)
+         db.session.add(question)
+         db.session.commit()
+         emit_question(question, [])
+         return jsonify({'success':True})
+      else:
+         return Response(status=400)
+
+
+@app.route('/home/questions/<int:q_id>')
+def get_question(q_id):
+
+   try:
+      q = Question.query.filter(Question.id == q_id).one()
+   except:
+      return Response(status=404)
+
+   comments = Comment.query.filter(Comment.question_id == q_id)
    for c in comments:
       c.all_attachments = Attachment.query.filter(Attachment.comment_id == c.id)
-   return render_template('questions.html', comments=comments)
+
+      attachments_json = []
+      for a in c.all_attachments:
+         a = {
+            "path": a.path,
+            "name": a.user_filename
+         }
+         attachments_json.append(a)
+      c.all_attachments = attachments_json
+
+   comments_json = []
+   for comment in comments:
+      comments_json.append({
+         'c_id': comment.id,
+         'c_text': comment.text,
+         'c_likes': comment.likes,
+         'attachments': comment.all_attachments
+      })
+
+   return jsonify({
+      'id': q_id,
+      'name': q.user_name,
+      'title': q.title,
+      'content': q.content,
+      'likes': q.likes,
+      'comments': comments_json
+   })
+         
+
 
 @app.route('/home/assignments')
 def assignments():
    return render_template('assignments.html')
 
 #Used for sending the comment send form to the server
-@app.route('/home/questions/comments', methods=['POST'])
-def post_comment_to_question():
+@app.route('/home/questions/<int:q_id>/comments', methods=['POST'])
+def post_comment_to_question(q_id):
    if not os.path.exists(app.config['UPLOAD_FOLDER']):
       os.makedirs(app.config['UPLOAD_FOLDER'])
    
    form_text = request.form['comment-string']
-   comment = Comment(text=form_text, likes=0)
+   comment = Comment(text=form_text, likes=0, question_id=q_id)
    db.session.add(comment)
    db.session.commit()
 
