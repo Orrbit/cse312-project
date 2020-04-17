@@ -31,7 +31,7 @@ on the backend and logistics.
 
 * Licensing?
 
-No licensing.
+MIT License.
 
 ### Form Code
 
@@ -110,4 +110,4 @@ of this container type. class = "card-text" signifies that this is the text that
 
 * Licensing?
 
-No licensing.
+MIT License.
