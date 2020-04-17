@@ -100,11 +100,11 @@ $(document).ready(function () {
             data: userInput,
             success: function (data) {
                 console.log("success");
+                form.reset();
                 // Clear the form
             },
             error: function (err) {
                 console.log("error with post");
-                // Provide some indication that there was an error
             }
         });
 
