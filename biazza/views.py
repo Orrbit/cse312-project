@@ -41,8 +41,8 @@ def questions():
       return render_template('questions.html', comments=comments, questions=questions, top_question=top_question)
 
    elif request.method == 'POST':
-      question_title = request.form['title-input']
-      question_contents = request.form['question-input']
+      question_title = replace(request.form['title-input'])
+      question_contents = replace(request.form['question-input'])
       
       if len(question_title) > 0 and len(question_contents) > 0:
          # Need to handle file uploads and clean input from users
