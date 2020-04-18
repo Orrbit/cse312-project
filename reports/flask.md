@@ -7,7 +7,7 @@ tasks for us. Using this framework, we are able to quickly route requests and se
 
 **Flask Source Code** - (https://github.com/pallets/flask/)
 
-# Phase 1
+# Phase 1 & PHASE 2; SEE TEMPLATES
 
 As of Phase 1, we are using flask to listen for, handle, and serve up http requests. These requests are primarily for HTML, CSS, and JS
 files. However, it does have the ability to serve up a variety of files such as svgs if we choose to include those.
@@ -79,6 +79,23 @@ def assignments():
   in variables throghout our html file. For now all we care about is using the render_template function to create a text/html response
   from our server back to the client.
   
+  UPDATED FOR THE PHASE 2 RENDERING TEMPLATES
+  
+  An example that we can see the use of the template engine can be seen in our questions.html inside the templates directory.
+  
+  ```
+  {% for question in questions %}
+      {% if loop.index == 1 %}
+                        <a class="list-group-item list-group-item-action active" data-toggle="list" role="tab" id="{{question.id}}">      {{question.title}}</a>
+      {% else %}
+                    <a class="list-group-item list-group-item-action" data-toggle="list" role="tab" id="{{question.id}}">             {{question.title}}</a>
+      {% endif %}
+  {% endfor %}
+                    
+  ```
+  
+  We are giving the html render function a list of questions. Inside eacho one of thes questions, we have an id that we need to assign to the id attribute of our a tag and we also have the question title that will need to be displayed as inner html of the tag. This will help users that are just loading the html page get content that is up to date with what the database has insead of just seeing static content.
+  
  ## How is flask completing these three tasks?
  
  ### Flask Object
@@ -114,6 +131,10 @@ def assignments():
   is sent off to jinja code. Lets investigate that code. The inner workings have to retrieve the source first and then compile the source
   with all of the information. We don't have to look into how it loads in the info quite yet because we are simply using it to load 
   our source file.
+  
+  UPDATED FOR THE PHASE 2 RENDERING TEMPLATES
+  
+  We can see that the jinja template engine is very powerful. A lot of the bulk functionality is in the parser.py function at [here](https://github.com/pallets/jinja/blob/master/src/jinja2/parser.py) If we look at each one of the methods in there, it has a method for parsing each type of statement it could come across, such as parse_for, parse_if and parse_staement. Just as any engine like this is going to work, it has key words that it looks at. It defines the key words that you can use at the [top of the parser](https://github.com/pallets/jinja/blob/da812816ff1a459eefa7ca946b4c108cc7106c85/src/jinja2/parser.py#L8)
   
   ## Is there any licensing?
   
