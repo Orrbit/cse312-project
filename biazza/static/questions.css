@@ -1,5 +1,4 @@
 .question-list{
-    max-height: 80vh;
     overflow:scroll;
     -webkit-overflow-scrolling: touch;
     max-width: 100%;
@@ -8,10 +7,10 @@
 
 
 nav.navbar{
-    height: 20vh;
+    /* height: 20vh; */
 }
 
-body{
+body, html{
     min-height: 100vh;
     max-height: 100vh;
 }
@@ -30,7 +29,6 @@ body{
 }
 
 .form-control {
-    resize: vertical;
     overflow: auto;
 }
 
@@ -52,7 +50,7 @@ body{
 }
 
 #question-thread{
-    /* height: 40vh; */
+    height: 40vh;
     /* max-height: 100vh; */
     overflow:scroll;
     -webkit-overflow-scrolling: touch;
@@ -72,4 +70,33 @@ body{
 .card {
     min-height: 100vh;
     height: 100vh;
+}
+
+
+.questions-controls{
+    height: fit-content;
+}
+
+.container-fluid{
+    max-height: inherit;
+}
+
+aside {
+    max-height: inherit;
+    display: flex;
+    flex-direction: column;
+}
+
+#questionsPane {
+    /* max-height: inherit; */
+    flex-grow: 1;
+}
+
+.comment-ta {
+    resize: none;
+}
+
+
+button.liked {
+    opacity: .65 !important;
 }

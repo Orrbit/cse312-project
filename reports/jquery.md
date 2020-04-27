@@ -70,3 +70,48 @@ NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE
 LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION
 OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION
 WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
+
+
+# Phase 2
+For phase 2, we have increased our reliance on the jQuery library. We have extended our use of onclick and submit handlers that was described in Phase 1. We have also begun to use it to simplify the AJAX request process.
+
+## What is jQuery accomplishing for our group?
+As mentioned above, jQuery is simplifying the AJAX request process. For example, we have overriden the default behavior of forms to allow us to send an AJAX request without requesting the page on form submission. This makes it very easy to capture user input to send to the server while defining the desired behavior of the page. An example of this can be seen below:
+
+```
+$("#add-comment").submit(function () {
+    var form = $('#add-comment')[0];
+    var userInput = new FormData(form);
+
+    console.log("User Input : " + userInput);
+
+    var q_id = $('.active').attr('id');
+
+    $.ajax({
+        type: "POST",
+        url: "/home/questions/" + q_id + "/comments",
+        processData: false,
+        contentType: false,
+        cache: false,
+        data: userInput,
+        success: function (data) {
+            console.log("success");
+            form.reset();
+            // Clear the form
+        },
+        error: function (err) {
+            console.log("error with post");
+        }
+    });
+
+
+    return false;
+});
+
+```
+
+Here we overrode the default submit functionality of the form with an id of 'add-comment'. This allowed us to very easily obtain the input that the user provided to us in the form and then submit the form without causing the page to refresh.
+
+
+## How does jQuery accomplish this goal - (https://api.jquery.com/jquery.ajax/)
+The functionality provided to us with the code that was seen above could be achieved with standard JavaScript code. The documenation states that "The jQuery XMLHttpRequest object returned by `$.ajax()` as of jQuery 1.5 is a superset of the browser's native XMLHttpRequest object." jQuery is simply extending the built-in AJAX functionality to provide a much simpler and more readable way to write that code. 
