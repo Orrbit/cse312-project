@@ -14,6 +14,7 @@
     <script src="/include/jquery.min.js"></script>
     <script src="/include/bootstrap.js"></script>
     <script src="/include/popper.min.js"></script>
+    <script src="signup.js"></script>
 </head>
 
 <body>
@@ -23,7 +24,8 @@
             <div class="col"></div>
             <div class="col bg-light">
                 <h1 class="mb-4">Signup for &#127345;iazza</h1>
-                <form method="POST" action="/signup">
+                <form id="signupForm">
+                    <p id="usrMsg"></p>
                     <div class="form-group">
                         <label for="emailInput">Email address</label>
                         <input type="email" class="form-control" id="emailInput" placeholder="Enter your email" required="true">
@@ -39,7 +41,7 @@
                     <div class="form-group">
                         <label for="passwordInput">Password</label>
                         <input type="password" class="form-control" id="passwordInput" placeholder="Password" required="true">
-                        <small id="passwordHelp" class="form-text text-muted">Password must contain at least 8 characters, uppercase, lowercase, a symbol, and a number.</small>
+                        <small id="passwordHelp" class="form-text text-muted">Password must contain at least 8 characters including an uppercase, lowercase, and a number.</small>
                     </div>
                     <button type="submit" class="btn btn-primary">Sign Up</button>
                 </form>
