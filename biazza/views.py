@@ -4,11 +4,11 @@ from flask import Blueprint, flash, Markup, redirect, render_template, url_for, 
 from werkzeug.utils import secure_filename
 # from biazza.database import db_session
 from biazza import app, ALLOWED_EXTENSIONS
-from biazza.models import Attachment, Comment, Question, db
+from biazza.models import Attachment, Comment, Question, Accounts, db
 from biazza.socket_handlers import emit_comment, emit_question
 import os
 import uuid
-
+import bcrypt
 
 @app.route('/')
 def home():
@@ -17,10 +17,52 @@ def home():
 
 @app.route('/signup', methods=['GET', 'POST'])
 def handle_signup():
+
+    # print("WHERE TF YOU AT")
+    # print(request.form)
+
     if request.method == 'GET':
         return send_file('static/signup.html')
     else:
         # This part will handle validation of signup requests
+
+        form_data = request.form 
+
+        email = form_data.get("email")
+        first_name = form_data.get("firstName")
+        last_name = form_data.get("lastName")
+        password = form_data.get("password")
+
+        #change all emails for Injection
+        email = replace(email)
+        first_name = replace(first_name)
+        last_name = replace(last_name)
+        password = replace(password)
+
+        # hash the password
+        password = password.encode('utf-8')
+        password = bcrypt.hashpw(password, bcrypt.gensalt())
+
+        # check with database if email is taken.
+        emails_query = Accounts.query.filter_by(email = email).first()
+
+        # if not taken, use bcrypt to hasha + salt the password
+        if emails_query is None:
+            print("EMAIL NOT FOUND")
+
+            # insert the user data into the mySQL table
+            # store the new email + rest in the data base
+            to_insert = Accounts(email = email, first_name = first_name, last_name = last_name, password = password)
+            db.session.add(to_insert)
+            db.session.commit()
+
+        # if taken, send message to user that the email is taken
+        else:
+            print("EMAIL FOUND")
+            
+            # send invalid or error request to the client
+            return jsonify("email_found")
+
         return jsonify("Success")
 
 

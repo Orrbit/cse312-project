@@ -14,6 +14,17 @@ class Comment(db.Model):
     def __repr__(self):
         return '<Attachment %r>' % (self.text)
 
+class Accounts(db.Model):
+    __tablename__ = 'accounts'
+    id = db.Column(db.Integer, primary_key=True)
+    email = db.Column(db.String(100), unique=True)
+    first_name = db.Column(db.String(200))
+    last_name = db.Column(db.String(200))
+    password = db.Column(db.String(300))
+
+    def __repr__(self):
+        return '<Accounts %r>' % (self.email)
+
 class Attachment(db.Model):
     __tablename__ = 'attachment'
     id = db.Column(db.Integer, primary_key=True)

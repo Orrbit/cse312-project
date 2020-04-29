@@ -2,3 +2,6 @@
 DROP TABLE attachment;
 DROP TABLE comment;
 DROP TABLE question;
+
+/* Added for accounts */
+DROP TABLE accounts;
