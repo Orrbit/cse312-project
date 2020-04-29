@@ -10,9 +10,43 @@ import os
 import uuid
 import bcrypt
 
-@app.route('/')
+@app.route('/', methods=['GET', 'POST'])
 def home():
-    return render_template("login.html")
+
+    if request.method == 'GET':
+        print("IN GET")
+        return render_template("login.html")
+    
+    else:
+
+        form_data = request.form
+
+        email = form_data.get("email")
+        password = form_data.get("password")
+
+        email = replace(email)
+        password = replace(password)
+
+        password = password.encode('utf-8')
+
+        # verify that the user is present in the database if not present stay, else go to the home page
+
+        emails_query = Accounts.query.filter_by(email = email).first()
+
+        if emails_query is None:
+            return jsonify("email_not_found")
+        else:
+
+            # check if the password is valid Abcdef1!
+            stored_password = emails_query.password
+            stored_password = stored_password.encode('utf-8')
+
+            hashed_password = bcrypt.hashpw(password, bcrypt.gensalt())
+
+            if(bcrypt.checkpw(password, stored_password)):
+                return jsonify("Success")
+            else:
+                return jsonify("invalid_password")
 
 
 @app.route('/signup', methods=['GET', 'POST'])

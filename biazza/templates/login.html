@@ -3,29 +3,44 @@
 <head>
 
   <title>Login</title>
-
-  <link rel="stylesheet" href="login.css"></head>
-
-  <script src="login.js"></script>
-
+  
+  <!-- Bootstrap CSS and fa-icon -->
+  <link rel="stylesheet" href="/include/bootstrap.css">
+  <link rel="stylesheet" href="/include/fontawesome/css/all.css">
+  <link rel="stylesheet" href="/login.css">
+  <!-- jQuery first, then Popper.js, then Bootstrap JS -->
+  <script src="/include/jquery.min.js"></script>
+  <script src="/include/bootstrap.js"></script>
+  <script src="/include/popper.min.js"></script>
+  <script src="/login.js"></script>
+    
+</head>
 <center>
-<form action="" onsubmit="login();return false;">
-  <h2>Login</h2>
+    <div class = "inputLineWidth">
+      <form id="loginForm">
 
-    <br>
+        <br><br><br><br>
 
-    <div class="inputLineWidth">
+        <p id="usrMsg"></p>
+        <div class="form-group">
+            <label for="emailInput">Email address</label>
+            <input type="email" class="form-control" id="emailInput" placeholder="Enter your email" required="true">
+        </div>
+        <div class="form-group">
+            <label for="passwordInput">Password</label>
+            <input type="password" class="form-control" id="passwordInput" placeholder="Password" required="true">
+        </div>
+        <button type="submit" class="btn btn-primary">Log In</button>
+      </form>
+    </div>
+
+
+    <!-- <div class="inputLineWidth">
     <input type="text" placeholder="Username" name="psw-repeat">
 
     <br><br>
 
-    <input type="text" placeholder="Password" name="psw-repeat"><br><br>
-
-
-    <p> <a href="/signup.html" style="color:white">Sign Up</a>.</p>
-
-    <center><button class="button" style="vertical-align:middle"><span>Login </span></button></center>
-</form>
+    <input type="text" placeholder="Password" name="psw-repeat"><br><br> -->
 </center>
 
 </html>
