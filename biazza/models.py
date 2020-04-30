@@ -10,7 +10,9 @@ class Comment(db.Model):
     attachment = db.relationship("Attachment", backref="comment")
     likes = db.Column(db.Integer)
     question_id = db.Column(db.Integer, db.ForeignKey('question.id'))
+    user_id = db.Column(db.Integer, db.ForeignKey('accounts.id'))
     all_attachments = []
+    user_name = 'Anonymous'
 
     def __repr__(self):
         return '<Attachment %r>' % self.text
@@ -49,7 +51,7 @@ class Attachment(db.Model):
 class Question(db.Model):
     __tablename__ = 'question'
     id = db.Column(db.Integer, primary_key=True)
-    user_name = "Barry B. Benson"
+    user_id = db.Column(db.Integer, db.ForeignKey('accounts.id'))
     title = db.Column(db.String(200))
     content = db.Column(db.String(1000))
     likes = db.Column(db.Integer)

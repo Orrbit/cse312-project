@@ -52,7 +52,7 @@ socket.on('comment_emit', (data) => {
 
 
         let html = `<div class='${commentType}' id='comment-${id}'>
-        <h4>Me</h4>
+        <h4>${data['name']}</h4>
         <div class='comment-content'>
             ${msg}
         </div>
@@ -163,7 +163,7 @@ $(document).ready(function () {
                 for (var comment of data['comments']) {
                     html += `
                     <div class='my-comment bg-light text-dark' id="comment-${comment['c_id']}">
-                        <h4>Me</h4>
+                        <h4>${comment['name']}</h4>
                         <p class='comment-content'>
                             ${comment['c_text']}
                         </p>

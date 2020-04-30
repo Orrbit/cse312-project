@@ -104,13 +104,6 @@
 
                 </nav>
                 <div class="question-list list-group " id="questionsPane" role="tablist">
-                    <!-- <a class="list-group-item list-group-item-action" data-toggle="list" role="tab">What is a square
-                        root?</a>
-                    <a class="list-group-item list-group-item-action active" data-toggle="list" role="tab">Civil War
-                        Start Date</a>
-                    <a class="list-group-item list-group-item-action" data-toggle="list" role="tab">Has anyone seen my
-                        fidget spinner?</a>
-                    <a class="list-group-item list-group-item-action" data-toggle="list" role="tab">Question?</a> -->
 
                     {% for question in questions %}
                         {% if loop.index == 1 %}
@@ -141,7 +134,7 @@
 
                     {% for comment in comments %}
                     <div class='my-comment bg-light text-dark' id="comment-{{ comment.id }}">
-                        <h4>Me</h4>
+                        <h4>{{ comment.user_name }}</h4>
                         <p class='comment-content'>
                             {{ comment.text }}
                         </p>

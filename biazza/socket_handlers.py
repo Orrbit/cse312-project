@@ -56,12 +56,16 @@ def emit_comment(comment, attachments):
             "name": attachment.user_filename
         }
         attachment_info.append(new_attachment)
+
+    poster = Accounts.query.filter(Accounts.id == comment.user_id).first()
+
     socketio.emit('comment_emit', {
         "id": comment.id,
         "qid": comment.question_id,
         "text": comment.text,
         "likes": comment.likes,
-        "attachments": attachment_info
+        "attachments": attachment_info,
+        "name": poster.first_name + ' ' + poster.last_name
     }, broadcast=True)
 
 

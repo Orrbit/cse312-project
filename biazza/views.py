@@ -150,8 +150,9 @@ def home_page():
     if not user:
         return render_template("login.html")
 
+    users_name = user.first_name + ' ' + user.last_name
     # We now have info about the user and can put their info in the top right
-    return render_template('home.html')
+    return render_template('home.html', name=users_name)
 
 
 @app.route('/home/messages')
@@ -187,8 +188,13 @@ def questions():
             top_question = questions[0]
             comments = Comment.query.filter(Comment.question_id == top_question.id)
 
+            top_question_poster = Accounts.query.filter(Accounts.id == top_question.user_id).first()
+            top_question.user_name = top_question_poster.first_name + ' ' + top_question_poster.last_name
+
         for c in comments:
             c.all_attachments = Attachment.query.filter(Attachment.comment_id == c.id)
+            comment_poster = Accounts.query.filter(Accounts.id == c.user_id).first()
+            c.user_name = comment_poster.first_name + ' ' + comment_poster.last_name
         return render_template('questions.html', comments=comments, questions=questions, top_question=top_question)
 
     elif request.method == 'POST':
@@ -205,7 +211,7 @@ def questions():
 
         if len(question_title) > 0 and len(question_contents) > 0:
             # Need to handle file uploads and clean input from users
-            question = Question(title=question_title, content=question_contents, likes=0)
+            question = Question(title=question_title, content=question_contents, likes=0, user_id=user.id)
             db.session.add(question)
             db.session.commit()
             emit_question(question, [])
@@ -228,9 +234,15 @@ def get_question(q_id):
     except:
         return Response(status=404)
 
+    poster = Accounts.query.filter(Accounts.id == q.user_id).first()
+    q.user_name = poster.first_name + ' ' + poster.last_name
+
     comments = Comment.query.filter(Comment.question_id == q_id)
+    comments_json = []
     for c in comments:
         c.all_attachments = Attachment.query.filter(Attachment.comment_id == c.id)
+        comment_poster = Accounts.query.filter(Accounts.id == c.user_id).first()
+        c.user_name = comment_poster.first_name + ' ' + comment_poster.last_name
 
         attachments_json = []
         for a in c.all_attachments:
@@ -240,14 +252,12 @@ def get_question(q_id):
             }
             attachments_json.append(a)
         c.all_attachments = attachments_json
-
-    comments_json = []
-    for comment in comments:
         comments_json.append({
-            'c_id': comment.id,
-            'c_text': comment.text,
-            'c_likes': comment.likes,
-            'attachments': comment.all_attachments
+            'c_id': c.id,
+            'c_text': c.text,
+            'c_likes': c.likes,
+            'attachments': c.all_attachments,
+            'name': c.user_name
         })
 
     return jsonify({
@@ -299,7 +309,7 @@ def post_comment_to_question(q_id):
 
     print(form_text)
 
-    comment = Comment(text=form_text, likes=0, question_id=q_id)
+    comment = Comment(text=form_text, likes=0, question_id=q_id, user_id=user.id)
 
     #  msg = msg.replace(">","&gt;"); msg = msg.replace("<","&lt;"); msg = msg.replace("&", "&amp;");
     #  </div><script>alert('PeePeePooPoo');</script>
