@@ -2,6 +2,7 @@ import flask_sqlalchemy
 
 db = flask_sqlalchemy.SQLAlchemy()
 
+
 class Comment(db.Model):
     __tablename__ = 'comment'
     id = db.Column(db.Integer, primary_key=True)
@@ -12,7 +13,8 @@ class Comment(db.Model):
     all_attachments = []
 
     def __repr__(self):
-        return '<Attachment %r>' % (self.text)
+        return '<Attachment %r>' % self.text
+
 
 class Accounts(db.Model):
     __tablename__ = 'accounts'
@@ -23,7 +25,15 @@ class Accounts(db.Model):
     password = db.Column(db.String(300))
 
     def __repr__(self):
-        return '<Accounts %r>' % (self.email)
+        return '<Accounts %r>' % self.email
+
+
+class UserTokens(db.Model):
+    __tablename__ = 'user_tokens'
+    id = db.Column(db.Integer, primary_key=True)
+    user_id = db.Column(db.Integer, db.ForeignKey('accounts.id'))
+    token_hash = db.Column(db.String(128), unique=True)
+
 
 class Attachment(db.Model):
     __tablename__ = 'attachment'
@@ -32,9 +42,8 @@ class Attachment(db.Model):
     path = db.Column(db.String(200), unique=True)
     comment_id = db.Column(db.Integer, db.ForeignKey('comment.id'))
 
-
     def __repr__(self):
-        return '<Attachment %r>' % (self.path)
+        return '<Attachment %r>' % self.path
 
 
 class Question(db.Model):
@@ -46,4 +55,4 @@ class Question(db.Model):
     likes = db.Column(db.Integer)
 
     def __repr__(self):
-        return '<Question %r>' % (self.title)
+        return '<Question %r>' % self.title

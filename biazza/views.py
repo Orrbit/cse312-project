@@ -1,11 +1,12 @@
 # This is where the routes are defined.
 from flask import Blueprint, flash, Markup, redirect, render_template, url_for, request, Response, jsonify, escape, \
-    send_from_directory, send_file
+    send_from_directory, send_file, make_response
 from werkzeug.utils import secure_filename
 # from biazza.database import db_session
 from biazza import app, ALLOWED_EXTENSIONS
 from biazza.models import Attachment, Comment, Question, Accounts, db
 from biazza.socket_handlers import emit_comment, emit_question
+from biazza.token_util import create_token_for_user, table_contains_token
 import os
 import uuid
 import bcrypt
@@ -39,6 +40,7 @@ def handle_signup():
         last_name = replace(last_name)
         password = replace(password)
 
+        print(password)
         # hash the password
         password = password.encode('utf-8')
         password = bcrypt.hashpw(password, bcrypt.gensalt())
@@ -53,9 +55,15 @@ def handle_signup():
             # insert the user data into the mySQL table
             # store the new email + rest in the data base
             to_insert = Accounts(email = email, first_name = first_name, last_name = last_name, password = password)
-            db.session.add(to_insert)
+            result = db.session.add(to_insert)
             db.session.commit()
 
+            uid = to_insert.id
+            token = create_token_for_user(uid)
+
+            response = make_response(jsonify("Success"))
+            response.set_cookie('biazza_token', token)
+            return response
         # if taken, send message to user that the email is taken
         else:
             print("EMAIL FOUND")
@@ -63,7 +71,6 @@ def handle_signup():
             # send invalid or error request to the client
             return jsonify("email_found")
 
-        return jsonify("Success")
 
 
 @app.route('/home')
