@@ -27,6 +27,15 @@ class Accounts(db.Model):
     def __repr__(self):
         return '<Accounts %r>' % self.email
 
+class Conversation(db.Model):
+    __tablename__ = 'conversation'
+    id = db.Column(db.Integer, primary_key=True)
+    user_owner_id = db.Column(db.Integer, db.ForeignKey('accounts.id'))
+    user_guest_id = db.Column(db.Integer, db.ForeignKey('accounts.id'))
+
+    def __repr__(self):
+        return '<Conversation %r>' % self.id
+
 
 class UserTokens(db.Model):
     __tablename__ = 'user_tokens'
