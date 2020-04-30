@@ -55,6 +55,8 @@ $(document).ready(function () {
         // console.log(leng, bigLetter, num, specialChar);
         
         if(leng==true&&bigLetter==true&&num==true&&specialChar==true){
+
+        // if(true){
             $(this).addClass("valid").removeClass("invalid");
             $requirements.removeClass("wrong").addClass("good");
             $passwordAlert.removeClass("alert-warning").addClass("alert-success");
@@ -88,13 +90,41 @@ $(document).ready(function () {
         
                             // window.location.pathname = "/home/messages";
         
+                        }else if(data.hasOwnProperty("size")){ // some kind of password error
+                            
+                            var error_string = "<b>Correct: </b>";
+
+                            if(!data.size){
+                                error_string += "<br>Size >= 8.";
+                            }
+
+                            if(!data.cap){
+                                error_string += "<br>1 Capital Alphabet.";
+                            }
+
+                            if(!data.num){
+                                error_string += "<br>1 Number.";
+                            }
+
+                            if(!data.spec){
+                                error_string += "<br>1 Special Char.";
+                            }
+
+                            document.getElementById("usrMsg").innerHTML = error_string;
+
+                            const msgElem = $('#usrMsg');
+                            msgElem.css("color", "red");
+
+                            document.getElementById("passwordInput").value = "";
+
+
                         }else if(data == "Success"){
         
                             console.log("EMAIL NOT FOUND!!")
         
                             window.location.pathname = "/home";
         
-                        }    
+                        }  
         
                         // Will most likely reroute the user to the home page
                     },

@@ -10,6 +10,7 @@ from biazza.token_util import create_token_for_user, table_contains_token
 import os
 import uuid
 import bcrypt
+import re
 
 @app.route('/', methods=['GET', 'POST'])
 def home():
@@ -68,7 +69,30 @@ def handle_signup():
         last_name = form_data.get("lastName")
         password = form_data.get("password")
 
-        #change all emails for Injection
+        # check password strength. Conditions to check. Size >= 8, One big char, One number, One special char
+        check_size = (len(password) >= 8)
+        check_cap  = True
+        check_num  = True
+        check_spec = True
+
+        # check upper case char
+        if not any(x.isupper() for x in password):
+            check_cap = False
+        
+        # check number
+        if not any(x.isdigit() for x in password):
+            check_num = False
+
+        # check special char
+        string_check= re.compile('[@_!#$%^&*()<>?/\|}{~:]') 
+        if(string_check.search(password) == None):
+            check_spec = False
+
+        # return a json string
+        if((check_size and check_cap and check_num and check_spec) == False):
+            return jsonify({"size" : check_size, "cap" : check_cap, "num" : check_num, "spec" : check_spec})
+
+        # change all emails for Injection
         email = replace(email)
         first_name = replace(first_name)
         last_name = replace(last_name)
