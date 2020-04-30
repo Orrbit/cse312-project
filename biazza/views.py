@@ -1,42 +1,181 @@
 # This is where the routes are defined.
 from flask import Blueprint, flash, Markup, redirect, render_template, url_for, request, Response, jsonify, escape, \
-    send_from_directory, send_file
+    send_from_directory, send_file, make_response
 from werkzeug.utils import secure_filename
 # from biazza.database import db_session
 from biazza import app, ALLOWED_EXTENSIONS
-from biazza.models import Attachment, Comment, Question, db
+from biazza.models import Attachment, Comment, Question, Accounts, db
 from biazza.socket_handlers import emit_comment, emit_question
+from biazza.token_util import create_token_for_user, table_contains_token, get_user_with_token, delete_token
 import os
 import uuid
+import bcrypt
+import re
 
-
-@app.route('/')
+@app.route('/', methods=['GET', 'POST'])
 def home():
-    return render_template("login.html")
+
+    if request.method == 'GET':
+        print("IN GET")
+        token = request.cookies.get('biazza_token')
+        print(token)
+        if token and get_user_with_token(token):
+            return redirect('/home')
+        return render_template("login.html")
+    
+    else:
+        form_data = request.form
+
+        email = form_data.get("email")
+        password = form_data.get("password")
+
+        email = replace(email)
+        password = replace(password)
+
+        password = password.encode('utf-8')
+
+        # verify that the user is present in the database if not present stay, else go to the home page
+
+        emails_query = Accounts.query.filter_by(email = email).first()
+
+        if emails_query is None:
+            return jsonify("email_not_found")
+        else:
+
+            # check if the password is valid Abcdef1!
+            stored_password = emails_query.password
+            stored_password = stored_password.encode('utf-8')
+
+            hashed_password = bcrypt.hashpw(password, bcrypt.gensalt())
+
+            if bcrypt.checkpw(password, stored_password):
+                token = create_token_for_user(emails_query.id)
+                response = make_response(jsonify("Success"))
+                response.set_cookie('biazza_token', token)
+                return response
+            else:
+                return jsonify("invalid_password")
 
 
 @app.route('/signup', methods=['GET', 'POST'])
 def handle_signup():
+
+    # print("WHERE TF YOU AT")
+    # print(request.form)
+
     if request.method == 'GET':
         return send_file('static/signup.html')
     else:
         # This part will handle validation of signup requests
-        return jsonify("Success")
+
+        form_data = request.form 
+
+        email = form_data.get("email")
+        first_name = form_data.get("firstName")
+        last_name = form_data.get("lastName")
+        password = form_data.get("password")
+
+        # check password strength. Conditions to check. Size >= 8, One big char, One number, One special char
+        check_size = (len(password) >= 8)
+        check_cap  = True
+        check_num  = True
+        check_spec = True
+        check_lower = True
+
+        # check upper case char
+        if not any(x.isupper() for x in password):
+            check_cap = False
+
+        if not any(x.islower() for x in password):
+            check_lower = False
+        
+        # check number
+        if not any(x.isdigit() for x in password):
+            check_num = False
+
+        # check special char
+        string_check= re.compile('[@_!#$%^&*()<>?/\|}{~:]') 
+        if(string_check.search(password) == None):
+            check_spec = False
+
+        # return a json string
+        if((check_size and check_cap and check_num and check_spec) == False):
+            return jsonify({"size" : check_size, "cap" : check_cap, "num" : check_num, "spec" : check_spec, "lower": check_lower})
+
+        # change all emails for Injection
+        email = replace(email)
+        first_name = replace(first_name)
+        last_name = replace(last_name)
+        password = replace(password)
+
+        print(password)
+        # hash the password
+        password = password.encode('utf-8')
+        password = bcrypt.hashpw(password, bcrypt.gensalt())
+
+        # check with database if email is taken.
+        emails_query = Accounts.query.filter_by(email = email).first()
+
+        # if not taken, use bcrypt to hasha + salt the password
+        if emails_query is None:
+            print("EMAIL NOT FOUND")
+
+            # insert the user data into the mySQL table
+            # store the new email + rest in the data base
+            to_insert = Accounts(email = email, first_name = first_name, last_name = last_name, password = password)
+            result = db.session.add(to_insert)
+            db.session.commit()
+
+            uid = to_insert.id
+            token = create_token_for_user(uid)
+
+            response = make_response(jsonify("Success"))
+            response.set_cookie('biazza_token', token)
+            return response
+        # if taken, send message to user that the email is taken
+        else:
+            print("EMAIL FOUND")
+            
+            # send invalid or error request to the client
+            return jsonify("email_found")
+
 
 
 @app.route('/home')
 def home_page():
+    token = request.cookies.get('biazza_token')
+    user = get_user_with_token(token)
+
+    # If the user could not be found in the db make them login
+    if not user:
+        return render_template("login.html")
+
+    # We now have info about the user and can put their info in the top right
     return render_template('home.html')
 
 
 @app.route('/home/messages')
 def messages():
+    token = request.cookies.get('biazza_token')
+    user = get_user_with_token(token)
+
+    # If the user could not be found in the db make them login
+    if not user:
+        return render_template("login.html")
+
     return render_template('messages.html')
 
 
 @app.route('/home/questions', methods=['GET', 'POST'])
 def questions():
     if request.method == 'GET':
+
+        token = request.cookies.get('biazza_token')
+        user = get_user_with_token(token)
+
+        # If the user could not be found in the db make them login
+        if not user:
+            return render_template("login.html")
 
         questions = Question.query.all()
         questions.reverse()
@@ -53,6 +192,14 @@ def questions():
         return render_template('questions.html', comments=comments, questions=questions, top_question=top_question)
 
     elif request.method == 'POST':
+
+        token = request.cookies.get('biazza_token')
+        user = get_user_with_token(token)
+
+        # If the user could not be found in the db make them login
+        if not user:
+            return render_template("login.html")
+
         question_title = replace(request.form['title-input'])
         question_contents = replace(request.form['question-input'])
 
@@ -69,6 +216,13 @@ def questions():
 
 @app.route('/home/questions/<int:q_id>')
 def get_question(q_id):
+    token = request.cookies.get('biazza_token')
+    user = get_user_with_token(token)
+
+    # If the user could not be found in the db make them login
+    if not user:
+        return render_template("login.html")
+
     try:
         q = Question.query.filter(Question.id == q_id).one()
     except:
@@ -108,6 +262,13 @@ def get_question(q_id):
 
 @app.route('/home/assignments')
 def assignments():
+    token = request.cookies.get('biazza_token')
+    user = get_user_with_token(token)
+
+    # If the user could not be found in the db make them login
+    if not user:
+        return render_template("login.html")
+
     return render_template('assignments.html')
 
 
@@ -122,6 +283,13 @@ def replace(text):
 # Used for sending the comment send form to the server
 @app.route('/home/questions/<int:q_id>/comments', methods=['POST'])
 def post_comment_to_question(q_id):
+    token = request.cookies.get('biazza_token')
+    user = get_user_with_token(token)
+
+    # If the user could not be found in the db make them login
+    if not user:
+        return render_template("login.html")
+
     if not os.path.exists(app.config['UPLOAD_FOLDER']):
         os.makedirs(app.config['UPLOAD_FOLDER'])
 
@@ -155,6 +323,13 @@ def post_comment_to_question(q_id):
             print("Attachment saved: " + repr(attachment))
     emit_comment(comment, attachments)
     return jsonify({'success': True})
+
+
+@app.route('/logout')
+def handle_logout():
+    token = request.cookies.get('biazza_token')
+    delete_token(token)
+    return render_template('login.html')
 
 
 # when a connection closes, the db session will also close
