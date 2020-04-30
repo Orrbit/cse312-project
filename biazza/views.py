@@ -6,7 +6,7 @@ from werkzeug.utils import secure_filename
 from biazza import app, ALLOWED_EXTENSIONS
 from biazza.models import Attachment, Comment, Question, Accounts, db
 from biazza.socket_handlers import emit_comment, emit_question
-from biazza.token_util import create_token_for_user, table_contains_token
+from biazza.token_util import create_token_for_user, table_contains_token, get_user_with_token, delete_token
 import os
 import uuid
 import bcrypt
@@ -17,10 +17,13 @@ def home():
 
     if request.method == 'GET':
         print("IN GET")
+        token = request.cookies.get('biazza_token')
+        print(token)
+        if token and get_user_with_token(token):
+            return redirect('/home')
         return render_template("login.html")
     
     else:
-
         form_data = request.form
 
         email = form_data.get("email")
@@ -45,8 +48,11 @@ def home():
 
             hashed_password = bcrypt.hashpw(password, bcrypt.gensalt())
 
-            if(bcrypt.checkpw(password, stored_password)):
-                return jsonify("Success")
+            if bcrypt.checkpw(password, stored_password):
+                token = create_token_for_user(emails_query.id)
+                response = make_response(jsonify("Success"))
+                response.set_cookie('biazza_token', token)
+                return response
             else:
                 return jsonify("invalid_password")
 
@@ -74,10 +80,14 @@ def handle_signup():
         check_cap  = True
         check_num  = True
         check_spec = True
+        check_lower = True
 
         # check upper case char
         if not any(x.isupper() for x in password):
             check_cap = False
+
+        if not any(x.islower() for x in password):
+            check_lower = False
         
         # check number
         if not any(x.isdigit() for x in password):
@@ -90,7 +100,7 @@ def handle_signup():
 
         # return a json string
         if((check_size and check_cap and check_num and check_spec) == False):
-            return jsonify({"size" : check_size, "cap" : check_cap, "num" : check_num, "spec" : check_spec})
+            return jsonify({"size" : check_size, "cap" : check_cap, "num" : check_num, "spec" : check_spec, "lower": check_lower})
 
         # change all emails for Injection
         email = replace(email)
@@ -133,17 +143,39 @@ def handle_signup():
 
 @app.route('/home')
 def home_page():
+    token = request.cookies.get('biazza_token')
+    user = get_user_with_token(token)
+
+    # If the user could not be found in the db make them login
+    if not user:
+        return render_template("login.html")
+
+    # We now have info about the user and can put their info in the top right
     return render_template('home.html')
 
 
 @app.route('/home/messages')
 def messages():
+    token = request.cookies.get('biazza_token')
+    user = get_user_with_token(token)
+
+    # If the user could not be found in the db make them login
+    if not user:
+        return render_template("login.html")
+
     return render_template('messages.html')
 
 
 @app.route('/home/questions', methods=['GET', 'POST'])
 def questions():
     if request.method == 'GET':
+
+        token = request.cookies.get('biazza_token')
+        user = get_user_with_token(token)
+
+        # If the user could not be found in the db make them login
+        if not user:
+            return render_template("login.html")
 
         questions = Question.query.all()
         questions.reverse()
@@ -160,6 +192,14 @@ def questions():
         return render_template('questions.html', comments=comments, questions=questions, top_question=top_question)
 
     elif request.method == 'POST':
+
+        token = request.cookies.get('biazza_token')
+        user = get_user_with_token(token)
+
+        # If the user could not be found in the db make them login
+        if not user:
+            return render_template("login.html")
+
         question_title = replace(request.form['title-input'])
         question_contents = replace(request.form['question-input'])
 
@@ -176,6 +216,13 @@ def questions():
 
 @app.route('/home/questions/<int:q_id>')
 def get_question(q_id):
+    token = request.cookies.get('biazza_token')
+    user = get_user_with_token(token)
+
+    # If the user could not be found in the db make them login
+    if not user:
+        return render_template("login.html")
+
     try:
         q = Question.query.filter(Question.id == q_id).one()
     except:
@@ -215,6 +262,13 @@ def get_question(q_id):
 
 @app.route('/home/assignments')
 def assignments():
+    token = request.cookies.get('biazza_token')
+    user = get_user_with_token(token)
+
+    # If the user could not be found in the db make them login
+    if not user:
+        return render_template("login.html")
+
     return render_template('assignments.html')
 
 
@@ -229,6 +283,13 @@ def replace(text):
 # Used for sending the comment send form to the server
 @app.route('/home/questions/<int:q_id>/comments', methods=['POST'])
 def post_comment_to_question(q_id):
+    token = request.cookies.get('biazza_token')
+    user = get_user_with_token(token)
+
+    # If the user could not be found in the db make them login
+    if not user:
+        return render_template("login.html")
+
     if not os.path.exists(app.config['UPLOAD_FOLDER']):
         os.makedirs(app.config['UPLOAD_FOLDER'])
 
@@ -262,6 +323,13 @@ def post_comment_to_question(q_id):
             print("Attachment saved: " + repr(attachment))
     emit_comment(comment, attachments)
     return jsonify({'success': True})
+
+
+@app.route('/logout')
+def handle_logout():
+    token = request.cookies.get('biazza_token')
+    delete_token(token)
+    return render_template('login.html')
 
 
 # when a connection closes, the db session will also close

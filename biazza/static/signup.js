@@ -92,14 +92,14 @@ $(document).ready(function () {
         
                         }else if(data.hasOwnProperty("size")){ // some kind of password error
                             
-                            var error_string = "<b>Correct: </b>";
+                            var error_string = "<b>Password Missing: </b>";
 
                             if(!data.size){
                                 error_string += "<br>Size >= 8.";
                             }
 
                             if(!data.cap){
-                                error_string += "<br>1 Capital Alphabet.";
+                                error_string += "<br>1 Capital Letter.";
                             }
 
                             if(!data.num){
@@ -108,6 +108,10 @@ $(document).ready(function () {
 
                             if(!data.spec){
                                 error_string += "<br>1 Special Char.";
+                            }
+
+                            if(!data.lower){
+                                error_string += "<br>1 Lowercase Letter."
                             }
 
                             document.getElementById("usrMsg").innerHTML = error_string;

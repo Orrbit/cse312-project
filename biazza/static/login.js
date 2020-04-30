@@ -10,7 +10,7 @@ $(document).ready(function () {
     
         $.ajax({
             type: "POST",
-            url: "",
+            url: "/",
             cache: false,
             data: requestData,
             success: data => {

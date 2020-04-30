@@ -1,4 +1,4 @@
-from biazza.models import UserTokens, db
+from biazza.models import UserTokens, Accounts, db
 
 from hashlib import sha512
 import secrets
@@ -33,7 +33,7 @@ def table_contains_hash(token_hash):
 
 def table_contains_token(token):
     token_bytes = token.encode('utf-8')
-    return table_contains_hash(sha512(token).hexdigest())
+    return table_contains_hash(sha512(token_bytes).hexdigest())
 
 
 def create_token_for_user(uid):
@@ -45,3 +45,32 @@ def create_token_for_user(uid):
     db.session.add(UserTokens(user_id=uid, token_hash=token_hash))
     db.session.commit()
     return token
+
+
+def get_user_with_token(token):
+    if not token:
+        return None
+
+    t = token.encode('utf-8')
+    token_obj = UserTokens.query.filter(UserTokens.token_hash == sha512(t).hexdigest()).first()
+    user = None
+
+    if token_obj:
+        user = Accounts.query.filter(Accounts.id == token_obj.user_id).first()
+
+    return user
+
+
+def delete_token(token):
+    if not token:
+        return False
+
+    t = token.encode('utf-8')
+    token_obj = UserTokens.query.filter(UserTokens.token_hash == sha512(t).hexdigest()).first()
+
+    if not token_obj:
+        return False
+
+    db.session.delete(token_obj)
+    db.session.commit()
+    return True
