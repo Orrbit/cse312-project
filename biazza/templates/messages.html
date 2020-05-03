@@ -12,22 +12,57 @@
     <link rel="stylesheet" href="/include/fontawesome/css/all.css">
     <!-- Our custom CSS -->
     <link rel="stylesheet" href="/messages.css" >
-
+    
+    
     <!-- jQuery first, then Popper.js, then Bootstrap JS -->
     <script src="/include/jquery.min.js"></script>
     <script src="/include/bootstrap.js"></script>
     <script src="/include/popper.min.js"></script>
+    
+    <script src="/messages.js"></script>
 
     <title>&#127345;iazza</title>
   </head>
   <body>
+
+    <!-- Modal for creating a new conversation-->
+
+    <div class="modal" tabindex="-1" role="dialog" id="conversation-start-modal">
+        <div class="modal-dialog" role="document">
+          <div class="modal-content">
+            <div class="modal-header">
+              <h5 class="modal-title">New Message</h5>
+              <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                <span aria-hidden="true">&times;</span>
+              </button>
+            </div>
+            <div class="modal-body">
+              <p>Select a person to start a private conversation with them. The person must have a <b>Biazza Account</b>.</p>
+                <div class="list-group">
+                {% for user in potential_conversation_users %}
+                    <a user_id="{{ user.id|e }}" class="list-group-item list-group-item-action text-center conversation-start-user">{{ user.first_name|e }} {{ user.last_name|e }}</a>
+                {% else %}
+                    <em>No users found</em>
+                {% endfor %}
+                </div>
+            </div>
+          </div>
+        </div>
+      </div>
     
     <div class="wrapper">
 
         <div class="sidebar p-2 bg-light overflow-auto border-left">
             
             <div class="sidebar-heading m-3 border-bottom">
-                <h2>Messages</h2>
+                <div class="row">
+                    <div class="col-8">
+                        <h2>Messages</h2>
+                    </div>
+                    <div class="col-4 text-right">
+                        <button type="button" class="btn btn-outline-primary" data-toggle="modal" data-target="#conversation-start-modal"><i class="fas fa-plus"></i></button>
+                    </div>
+                </div>
             </div>
 
             <div class="input-group mb-3">
@@ -44,18 +79,25 @@
 
                     <li class="my-3 py-1 border-top border-bottom">
                         <div class="message-container container">
-                            <div class="row">
-                                <div class="col-9">
-                                    <h5>Alice Doe</h5>
+                            
+
+                            {% for user in conversation_users %}
+                                <div user_id="{{ user.id|e }}" class="row">
+                                    <div class="col-9">
+                                        <h5>{{ user.first_name|e }} {{ user.last_name|e }}</h5>
+                                    </div>
+                                    <div class="col-3">
+                                        <p>3/9/20</p>
+                                    </div>
+                                    <div class="col-12">
+                                        <p>Hey Alice. Nothing much, I've just been...</p>
+                                    </div>
+                                    <a href="#" class="stretched-link"></a>
                                 </div>
-                                <div class="col-3">
-                                    <p>3/9/20</p>
-                                </div>
-                                <div class="col-12">
-                                    <p>Hey Alice. Nothing much, I've just been...</p>
-                                </div>
-                            </div>
-                            <a href="#" class="stretched-link"></a>
+                            {% else %}
+                                <em>No current conversations</em>
+                            {% endfor %}
+                            
                         </div>
                     </li>
 

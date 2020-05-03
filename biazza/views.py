@@ -4,7 +4,9 @@ from flask import Blueprint, flash, Markup, redirect, render_template, url_for, 
 from werkzeug.utils import secure_filename
 # from biazza.database import db_session
 from biazza import app, ALLOWED_EXTENSIONS
-from biazza.models import Attachment, Comment, Question, Accounts, db
+from biazza.models import Attachment, Comment, Question, Accounts, Conversation, db
+from sqlalchemy.orm import aliased
+from sqlalchemy import or_
 from biazza.socket_handlers import emit_comment, emit_question
 from biazza.token_util import create_token_for_user, table_contains_token, get_user_with_token, delete_token
 import os
@@ -164,7 +166,27 @@ def messages():
     if not user:
         return render_template("login.html")
 
-    return render_template('messages.html')
+    users_to_start_conversation = Accounts.query.filter(Accounts.id != user.id)
+
+    #if this were just sql, I could do the joins, however, it is sqlalchemy which is hard 
+    # for a pea brain so I will do the logic in python
+
+    #all conversations that you are part of
+    my_conversations = Conversation.query.filter(or_(Conversation.user_owner_id == user.id,
+                                                        Conversation.user_guest_id == user.id))
+
+    accounts_of_conversations = []
+
+    for c in my_conversations:
+        i_am_owner = c.user_owner_id == user.id
+        id_of_other_user = c.user_guest_id if i_am_owner else c.user_owner_id
+        account_of_other_user = Accounts.query.filter(Accounts.id != id_of_other_user).first()
+        accounts_of_conversations.append(account_of_other_user)
+
+    print(accounts_of_conversations)
+
+    return render_template('messages.html', potential_conversation_users=users_to_start_conversation,
+                                            conversation_users=accounts_of_conversations)
 
 
 @app.route('/home/questions', methods=['GET', 'POST'])
@@ -219,6 +241,19 @@ def questions():
         else:
             return Response(status=400)
 
+@app.route('/home/conversation', methods=['POST'])
+def conversations():
+    token = request.cookies.get('biazza_token')
+    user = get_user_with_token(token)
+
+    user_guest_id = request.form['guest_user']
+    conversation = Conversation(user_owner_id=user.id, user_guest_id=user_guest_id)
+    db.session.add(conversation)
+    db.session.commit()
+
+
+
+    return jsonify({'success': True})
 
 @app.route('/home/questions/<int:q_id>')
 def get_question(q_id):
