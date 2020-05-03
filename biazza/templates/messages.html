@@ -39,10 +39,10 @@
             <div class="modal-body">
               <p>Select a person to start a private conversation with them. The person must have a <b>Biazza Account</b>.</p>
                 <div class="list-group">
-                {% for user in users %}
+                {% for user in potential_conversation_users %}
                     <a user_id="{{ user.id|e }}" class="list-group-item list-group-item-action text-center conversation-start-user">{{ user.first_name|e }} {{ user.last_name|e }}</a>
                 {% else %}
-                    <em>no users found</em>
+                    <em>No users found</em>
                 {% endfor %}
                 </div>
             </div>
@@ -79,19 +79,25 @@
 
                     <li class="my-3 py-1 border-top border-bottom">
                         <div class="message-container container">
-                            <div class="row">
-                                
-                                <div class="col-9">
-                                    <h5>Alice Doe</h5>
+                            
+
+                            {% for user in conversation_users %}
+                                <div user_id="{{ user.id|e }}" class="row">
+                                    <div class="col-9">
+                                        <h5>{{ user.first_name|e }} {{ user.last_name|e }}</h5>
+                                    </div>
+                                    <div class="col-3">
+                                        <p>3/9/20</p>
+                                    </div>
+                                    <div class="col-12">
+                                        <p>Hey Alice. Nothing much, I've just been...</p>
+                                    </div>
+                                    <a href="#" class="stretched-link"></a>
                                 </div>
-                                <div class="col-3">
-                                    <p>3/9/20</p>
-                                </div>
-                                <div class="col-12">
-                                    <p>Hey Alice. Nothing much, I've just been...</p>
-                                </div>
-                            </div>
-                            <a href="#" class="stretched-link"></a>
+                            {% else %}
+                                <em>No current conversations</em>
+                            {% endfor %}
+                            
                         </div>
                     </li>
 

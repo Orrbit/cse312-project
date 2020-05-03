@@ -167,9 +167,25 @@ def messages():
 
     users_to_start_conversation = Accounts.query.filter(Accounts.id != user.id)
 
-    
+    #if this were just sql, I could do the joins, however, it is sqlalchemy which is hard 
+    # for a pea brain so I will do the logic in python
 
-    return render_template('messages.html', users=users_to_start_conversation)
+    #all conversations that you are part of
+    my_conversations = Conversation.query.filter(or_(Conversation.user_owner_id == user.id,
+                                                        Conversation.user_guest_id == user.id))
+
+    accounts_of_conversations = []
+
+    for c in my_conversations:
+        i_am_owner = c.user_owner_id == user.id
+        id_of_other_user = c.user_guest_id if i_am_owner else c.user_owner_id
+        account_of_other_user = Accounts.query.filter(Accounts.id != id_of_other_user).first()
+        accounts_of_conversations.append(account_of_other_user)
+
+    print(accounts_of_conversations)
+
+    return render_template('messages.html', potential_conversation_users=users_to_start_conversation,
+                                            conversation_users=accounts_of_conversations)
 
 
 @app.route('/home/questions', methods=['GET', 'POST'])
