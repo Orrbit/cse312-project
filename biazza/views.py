@@ -180,7 +180,7 @@ def messages():
     for c in my_conversations:
         i_am_owner = c.user_owner_id == user.id
         id_of_other_user = c.user_guest_id if i_am_owner else c.user_owner_id
-        account_of_other_user = Accounts.query.filter(Accounts.id != id_of_other_user).first()
+        account_of_other_user = Accounts.query.filter(Accounts.id == id_of_other_user).first()
         accounts_of_conversations.append(account_of_other_user)
 
     print(accounts_of_conversations)
