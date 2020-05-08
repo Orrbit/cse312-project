@@ -1,3 +1,5 @@
 *.pyc
 *.svg
 __pycahce__/*
+
+biazza/static/uploads/*
