@@ -25,9 +25,11 @@ class Accounts(db.Model):
     first_name = db.Column(db.String(200))
     last_name = db.Column(db.String(200))
     password = db.Column(db.String(300))
+    following = False
 
     def __repr__(self):
         return '<Accounts %r>' % self.email
+
 
 class Conversation(db.Model):
     __tablename__ = 'conversation'
@@ -67,3 +69,10 @@ class Question(db.Model):
 
     def __repr__(self):
         return '<Question %r>' % self.title
+
+
+class Followers(db.Model):
+    __tablename__ = 'followers'
+    id = db.Column(db.Integer, primary_key=True)
+    follower = db.Column(db.Integer, db.ForeignKey('accounts.id'))
+    leader = db.Column(db.Integer, db.ForeignKey('accounts.id'))

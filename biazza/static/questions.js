@@ -1,5 +1,16 @@
 const socket = io();
 
+let queryParams = new URLSearchParams(window.location.search);
+let filter = 'all';
+if(queryParams.has('filter')){
+    let f_param = queryParams.get('filter');
+    if(f_param === 'me'){
+        filter = 'me';
+    } else if(f_param === 'following'){
+        filter = 'following';
+    }
+}
+
 //Socket Listeners
 //Log connection
 socket.on('connect', () => {
@@ -19,7 +30,22 @@ socket.on('question_emit', (data) => {
     title = title.replace(">", "&gt;"); title = title.replace("<", "&lt;"); title = title.replace("&", "&amp;");
 
     let html = '<a class="list-group-item list-group-item-action" data-toggle="list" role="tab" id="' + q_id + '">' + title + '</a>'
-    $('#questionsPane').prepend(html);
+
+    if(filter === 'all'){
+        $('#questionsPane').prepend(html);
+    } else {
+        $.ajax({
+            method: 'GET',
+            url: '/home/questions/' + q_id + '/' + filter,
+            success: function (data) {
+                if (data === true){
+                    $('#questionsPane').prepend(html);
+                }
+            }
+        });
+    }
+
+
 });
 
 //Receive comment
