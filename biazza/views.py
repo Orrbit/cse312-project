@@ -4,7 +4,7 @@ from flask import Blueprint, flash, Markup, redirect, render_template, url_for, 
 from werkzeug.utils import secure_filename
 # from biazza.database import db_session
 from biazza import app, ALLOWED_EXTENSIONS
-from biazza.models import Attachment, Comment, Question, Accounts, Conversation, db
+from biazza.models import Attachment, Comment, Question, Accounts, Conversation, Message, db
 from sqlalchemy.orm import aliased
 from sqlalchemy import or_
 from biazza.socket_handlers import emit_comment, emit_question
@@ -13,6 +13,7 @@ import os
 import uuid
 import bcrypt
 import re
+from datetime import datetime
 
 @app.route('/', methods=['GET', 'POST'])
 def home():
@@ -188,6 +189,29 @@ def messages():
     return render_template('messages.html', potential_conversation_users=users_to_start_conversation,
                                             conversation_users=accounts_of_conversations)
 
+@app.route('/messages', methods=['POST', 'GET'])
+def messagesCRUD():
+    token = request.cookies.get('biazza_token')
+    user = get_user_with_token(token)
+
+    # If the user could not be found in the db make them login
+    if not user:
+        return Response(status=404)
+    
+
+
+    if request.method == 'POST':
+        text = request.form['text']
+        conversation_id = request.form['conversation_id']
+        time = datetime.now()
+        text = request.form['text']
+
+        message = Message(conversation_id=conversation_id, text=text, time=time)
+        db.session.add(message)
+        db.session.commit()
+
+        return Response(status=200)
+
 
 @app.route('/home/questions', methods=['GET', 'POST'])
 def questions():
@@ -241,8 +265,24 @@ def questions():
         else:
             return Response(status=400)
 
-@app.route('/home/conversation', methods=['POST'])
+@app.route('/conversation', methods=['GET', 'POST'])
 def conversations():
+    if request.method == 'GET':
+        conversation_id = request.args['conversation_id']
+
+        messages = Message.query.filter(Message.conversation_id == conversation_id).all()
+        if not messages:
+            return Response(status=404)
+        else:
+            data = []
+            for message in messages:
+                message_data = {
+                    "message_id": message.id,
+                    "text": message.text,
+                    "time": message.time,
+                }
+                data.append(message_data)
+            return jsonify(data)
     token = request.cookies.get('biazza_token')
     user = get_user_with_token(token)
 

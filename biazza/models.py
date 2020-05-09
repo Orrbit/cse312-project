@@ -34,6 +34,19 @@ class Conversation(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     user_owner_id = db.Column(db.Integer, db.ForeignKey('accounts.id'))
     user_guest_id = db.Column(db.Integer, db.ForeignKey('accounts.id'))
+    messages = db.relationship("Message", back_populates="conversation")
+
+    def __repr__(self):
+        return '<Conversation %r>' % self.id
+
+class Message(db.Model):
+    __tablename__ = 'message'
+    id = db.Column(db.Integer, primary_key=True)
+    conversation_id = db.Column(db.Integer, db.ForeignKey('conversation.id'))
+    conversation = db.relationship("Conversation", back_populates="messages")
+    time = db.Column(db.DateTime(), nullable=False)
+    text = db.Column(db.Text(), nullable=True)
+    
 
     def __repr__(self):
         return '<Conversation %r>' % self.id
