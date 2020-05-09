@@ -6,7 +6,7 @@ from werkzeug.utils import secure_filename
 from biazza import app, ALLOWED_EXTENSIONS
 from biazza.models import Attachment, Comment, Question, Accounts, Conversation, Message, db
 from sqlalchemy.orm import aliased
-from sqlalchemy import or_
+from sqlalchemy import or_, join
 from biazza.socket_handlers import emit_comment, emit_question
 from biazza.token_util import create_token_for_user, table_contains_token, get_user_with_token, delete_token
 import os
@@ -167,29 +167,31 @@ def messages():
     if not user:
         return render_template("login.html")
 
+    conversations_with_guests = Conversation.query\
+        .join(Accounts, Conversation.user_guest_id == Accounts.id) \
+        .add_columns(Conversation.id, Accounts.first_name, Accounts.last_name)\
+        .filter(Conversation.user_owner_id == user.id)
+    conversations_with_hosts = Conversation.query\
+        .join(Accounts, Conversation.user_owner_id == Accounts.id) \
+        .add_columns(Conversation.id, Accounts.first_name, Accounts.last_name)\
+        .filter(Conversation.user_guest_id == user.id)
+    conversations_with_all = conversations_with_guests.union(conversations_with_hosts).all()
+
     users_to_start_conversation = Accounts.query.filter(Accounts.id != user.id)
 
-    #if this were just sql, I could do the joins, however, it is sqlalchemy which is hard 
-    # for a pea brain so I will do the logic in python
-
-    #all conversations that you are part of
-    my_conversations = Conversation.query.filter(or_(Conversation.user_owner_id == user.id,
-                                                        Conversation.user_guest_id == user.id))
-
-    accounts_of_conversations = []
-
-    for c in my_conversations:
-        i_am_owner = c.user_owner_id == user.id
-        id_of_other_user = c.user_guest_id if i_am_owner else c.user_owner_id
-        account_of_other_user = Accounts.query.filter(Accounts.id == id_of_other_user).first()
-        accounts_of_conversations.append(account_of_other_user)
-
-    print(accounts_of_conversations)
+    messages_of_top_conversations = Conversation.query\
+        .join(Message, Conversation.id == Message.conversation_id) \
+        .join(Accounts, Accounts.id == Message.sender_id) \
+        .add_columns(Accounts.id==user.id, Message.text, Message.time, Accounts.first_name, Accounts.last_name) \
+        .filter(Conversation.id == conversations_with_all[0][0].id) \
+        .order_by(Message.time)\
+        .all()
 
     return render_template('messages.html', potential_conversation_users=users_to_start_conversation,
-                                            conversation_users=accounts_of_conversations)
+                                            conversations_with_all=conversations_with_all,
+                                            messages_of_top_conversations=messages_of_top_conversations)
 
-@app.route('/messages', methods=['POST', 'GET'])
+@app.route('/message', methods=['POST', 'GET'])
 def messagesCRUD():
     token = request.cookies.get('biazza_token')
     user = get_user_with_token(token)
@@ -198,18 +200,50 @@ def messagesCRUD():
     if not user:
         return Response(status=404)
     
-
-
     if request.method == 'POST':
         text = request.form['text']
         conversation_id = request.form['conversation_id']
         time = datetime.now()
         text = request.form['text']
 
-        message = Message(conversation_id=conversation_id, text=text, time=time)
+        message = Message(conversation_id=conversation_id, text=text, time=time, sender_id=user.id)
         db.session.add(message)
         db.session.commit()
 
+        return Response(status=200)
+
+@app.route('/conversation', methods=['GET', 'POST'])
+def conversationsCRUD():
+    token = request.cookies.get('biazza_token')
+    user = get_user_with_token(token)
+
+    # If the user could not be found in the db make them login
+    if not user:
+        return Response(status=404)
+
+    if request.method == 'GET':
+        conversation_id = request.args['conversation_id']
+        conversation = Conversation.query.filter(Conversation.id == conversation_id).first()
+        if not conversation:
+            return Response(status=404)
+
+        messages = Message.query.filter(Message.conversation_id == conversation_id).all()
+        data = []
+        for message in messages:
+            message_data = {
+                "message_id": message.id,
+                "text": message.text,
+                "time": message.time,
+                "sender_id": message.sender_id
+            }
+            data.append(message_data)
+        return jsonify(data)
+
+    elif request.method == 'POST':
+        user_guest_id = request.form['guest_user']
+        conversation = Conversation(user_owner_id=user.id, user_guest_id=user_guest_id)
+        db.session.add(conversation)
+        db.session.commit()
         return Response(status=200)
 
 
@@ -264,36 +298,6 @@ def questions():
             return jsonify({'success': True})
         else:
             return Response(status=400)
-
-@app.route('/conversation', methods=['GET', 'POST'])
-def conversations():
-    if request.method == 'GET':
-        conversation_id = request.args['conversation_id']
-
-        messages = Message.query.filter(Message.conversation_id == conversation_id).all()
-        if not messages:
-            return Response(status=404)
-        else:
-            data = []
-            for message in messages:
-                message_data = {
-                    "message_id": message.id,
-                    "text": message.text,
-                    "time": message.time,
-                }
-                data.append(message_data)
-            return jsonify(data)
-    token = request.cookies.get('biazza_token')
-    user = get_user_with_token(token)
-
-    user_guest_id = request.form['guest_user']
-    conversation = Conversation(user_owner_id=user.id, user_guest_id=user_guest_id)
-    db.session.add(conversation)
-    db.session.commit()
-
-
-
-    return jsonify({'success': True})
 
 @app.route('/home/questions/<int:q_id>')
 def get_question(q_id):
