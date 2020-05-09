@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>iazza</title>
+
+    <!-- Bootstrap CSS and fa-icon -->
+    <link rel="stylesheet" href="/include/bootstrap.css">
+    <link rel="stylesheet" href="/include/fontawesome/css/all.css">
+
+    <!-- jQuery first, then Popper.js, then Bootstrap JS -->
+    <script src="/include/jquery.min.js"></script>
+    <script src="/include/bootstrap.js"></script>
+    <script src="/include/popper.min.js"></script>
+    <script src="/classroom.js"></script>
+</head>
+<body>
+
+<div class="container">
+    <div class="row">
+        <div class="col rounded m-3">
+            <h3>All Classmates</h3> <hr>
+
+            <div id="classmateContainer">
+                {% for user in classroom %}
+                    <div id="{{ user.id }}" data-lastname="{{ user.last_name }}" class="row bg-light m-3 border">
+                        <div class="col-8">
+                            <h6>{{ user.first_name }} {{ user.last_name }}</h6>
+                            <a href="mailto:{{ user.email }}">{{ user.email }}</a>
+                        </div>
+                        <div class="col d-flex flex-row-reverse">
+                            {% if user.id == client.id %}
+                            {% elif not user.following %}
+                                <button class="btn btn-success my-auto not-following">Follow</button>
+                            {% else %}
+                                <button class="btn btn-danger my-auto following">Unfollow</button>
+                            {% endif %}
+                        </div>
+                    </div>
+                {% endfor %}
+            </div>
+        </div>
+
+        <div class="col rounded m-3">
+            <h3>Classmates You Follow</h3> <hr>
+
+            <div id="followContainer">
+                {% for leader in following %}
+                    <div id="{{ leader.id }}-following" data-lastname="{{ leader.last_name }}" class="row bg-light m-3 border">
+                        <div class="col-8">
+                            <h6>{{ leader.first_name }} {{ leader.last_name }}</h6>
+                            <a href="mailto:{{ leader.email }}">{{ leader.email }}</a>
+                        </div>
+                        <div class="col d-flex flex-row-reverse">
+                            <button class="btn btn-danger my-auto following">Unfollow</button>
+                        </div>
+                    </div>
+                {% endfor %}
+            </div>
+        </div>
+    </div>
+</div>
+
+</body>
+</html>
