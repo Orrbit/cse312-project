@@ -19,6 +19,8 @@
     display: none;
 }
 
+
+
 .content {
     width: inherit;
     max-height: 100vh;
@@ -31,6 +33,17 @@
 .message-box {
     resize: none;
     transition: .2s;
+}
+
+.conversation-block{
+    -webkit-transition: background-color 1s ease-out;
+    -moz-transition: background-color 1s ease-out;
+    -o-transition: background-color 1s ease-out;
+    transition: background-color 1s ease-out;
+}
+
+.conversation-block.flashing{
+    background-color: rgb(250, 250, 151);
 }
 
 .message {

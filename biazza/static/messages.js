@@ -26,30 +26,41 @@ function createMessageCard(singleMessageData){
     return content
 }
 
-$(document).ready(function(){
-  $("a.conversation-start-user").on("click", function(){
-      let guest_user = $(this).attr("user_id")
-      let name = $(this).text()
-      $.post( "/conversation", {guest_user:guest_user}, function(data) { 
-        let htmlForBar = `<div conversation_id="${data.id}" id="conversation-block-${data.id}" class="row conversation-block border border-dark py-3 " >
-            <div user_id="${guest_user}" class="col-12">
-                <h5>${ name }</h5>
+function createConversationHtml(conversation){
+  let htmlForBar = `<div conversation_id="${conversation.id}" id="conversation-block-${conversation.id}" class="row conversation-block border border-dark py-3 " >
+            <div user_id="${conversation.other_id}" class="col-12">
+                <h5>${ conversation.other_name }</h5>
             </div>
             <div class="col-12">
                 <p class="conversation-text">
-                    <b>Send your first message!</b>
+                    <b>${ conversation.text }</b>
                 </p>
             </div>
             <div class="col-8">
                 <small class="conversation-time">
-                    
+                  ${ conversation.time }
                 </small>
             </div>
             <div class="col-4">
                 <span class="badge badge-warning"><i class="fas fa-star"></i></span>
             </div>
         </div>`
-        $(".message-container").append(htmlForBar)
+  return htmlForBar
+}
+
+$(document).ready(function(){
+  $("a.conversation-start-user").on("click", function(){
+      let guest_user = $(this).attr("user_id")
+      let name = $(this).text()
+      $.post( "/conversation", {guest_user:guest_user}, function(data) {
+        conversationHtml = createConversationHtml({
+          id: data.id,
+          other_user: guest_user,
+          other_name: name,
+          text: "Start a new conversation now!",
+          time: (new Date(Date.now())).toISOString()
+        })
+        $(".message-container").append(conversationHtml)
         $('#conversation-start-modal').modal('hide')
       })
           .fail(function() {

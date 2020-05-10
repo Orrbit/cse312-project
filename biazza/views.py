@@ -8,7 +8,7 @@ from biazza.models import Attachment, Comment, Question, Accounts, Conversation,
 from sqlalchemy.orm import aliased
 from sqlalchemy import or_, join, not_, and_
 from biazza.socket_handlers import emit_comment, emit_question
-from biazza.room_handlers import emit_message
+from biazza.room_handlers import emit_message, emit_conversation
 from biazza.token_util import create_token_for_user, table_contains_token, get_user_with_token, delete_token
 import os
 import uuid
@@ -209,7 +209,7 @@ def get_users_conversation_bar(uid):
             msg = header_message.text
             time = header_message.time
         conversation_header_obj = {
-            "name": conversation[2] + conversation[3], 
+            "name": conversation[2] + ' ' + conversation[3], 
             "id": conversation[0].id, 
             "account_id": conversation[1], 
             "highlight_message": msg, 
@@ -232,7 +232,7 @@ def get_all_messages_of_conversation(cid, uid):
             "is_me":m[1],
             "text":m[2],
             "time":m[3],
-            "name":m[4]+m[5]
+            "name":m[4]+ ' ' + m[5]
         })
     return rv
 
@@ -277,6 +277,8 @@ def conversationsCRUD():
         conversation = Conversation.query.filter(Conversation.id == conversation_id).first()
         if not conversation:
             return Response(status=404)
+        if not (conversation.user_guest_id == user.id or conversation.user_owner_id == user.id):
+             return Response(status=403)
 
         data = get_all_messages_of_conversation(conversation_id, user.id)
         return jsonify(data)
@@ -286,6 +288,7 @@ def conversationsCRUD():
         conversation = Conversation(user_owner_id=user.id, user_guest_id=user_guest_id)
         db.session.add(conversation)
         db.session.commit()
+        emit_conversation(conversation)
         return jsonify({
             "id":conversation.id
         })
