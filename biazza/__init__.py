@@ -25,3 +25,4 @@ socketio = SocketIO(app)
 import biazza.views
 import biazza.models
 import biazza.socket_handlers
+import biazza.room_handlers

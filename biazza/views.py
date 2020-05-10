@@ -4,15 +4,17 @@ from flask import Blueprint, flash, Markup, redirect, render_template, url_for, 
 from werkzeug.utils import secure_filename
 # from biazza.database import db_session
 from biazza import app, ALLOWED_EXTENSIONS
-from biazza.models import Attachment, Comment, Question, Accounts, Conversation, Followers, db
+from biazza.models import Attachment, Comment, Question, Accounts, Conversation, Message, Followers, db
 from sqlalchemy.orm import aliased
-from sqlalchemy import or_
+from sqlalchemy import or_, join, not_, and_
 from biazza.socket_handlers import emit_comment, emit_question
+from biazza.room_handlers import emit_message
 from biazza.token_util import create_token_for_user, table_contains_token, get_user_with_token, delete_token
 import os
 import uuid
 import bcrypt
 import re
+from datetime import datetime
 
 
 @app.route('/', methods=['GET', 'POST'])
@@ -165,27 +167,128 @@ def messages():
     if not user:
         return render_template("login.html")
 
+    # Getting the conversations for the side bar
+
+    conversation_summary = get_users_conversation_bar(user.id)
+
+
     users_to_start_conversation = Accounts.query.filter(Accounts.id != user.id)
 
-    # if this were just sql, I could do the joins, however, it is sqlalchemy which is hard
-    # for a pea brain so I will do the logic in python
 
-    # all conversations that you are part of
-    my_conversations = Conversation.query.filter(or_(Conversation.user_owner_id == user.id,
-                                                     Conversation.user_guest_id == user.id))
-
-    accounts_of_conversations = []
-
-    for c in my_conversations:
-        i_am_owner = c.user_owner_id == user.id
-        id_of_other_user = c.user_guest_id if i_am_owner else c.user_owner_id
-        account_of_other_user = Accounts.query.filter(Accounts.id == id_of_other_user).first()
-        accounts_of_conversations.append(account_of_other_user)
-
-    print(accounts_of_conversations)
+    messages_of_top_conversation = []
+    if conversation_summary:
+        messages_of_top_conversation = get_all_messages_of_conversation(conversation_summary[0]["id"], user.id)
 
     return render_template('messages.html', potential_conversation_users=users_to_start_conversation,
-                           conversation_users=accounts_of_conversations)
+                                            conversations_with_all=conversation_summary,
+                                            messages_of_top_conversation=messages_of_top_conversation,
+                                            uid=user.id)
+
+def get_users_conversation_bar(uid):
+    rv = []
+    conversations_with_guests = Conversation.query\
+        .join(Accounts, Conversation.user_guest_id == Accounts.id) \
+        .add_columns(Conversation.id, Accounts.first_name, Accounts.last_name)\
+        .filter(Conversation.user_owner_id == uid)
+    conversations_with_hosts = Conversation.query\
+        .join(Accounts, Conversation.user_owner_id == Accounts.id) \
+        .add_columns(Conversation.id, Accounts.first_name, Accounts.last_name)\
+        .filter(Conversation.user_guest_id == uid)
+    conversations_with_all_query = conversations_with_guests.union(conversations_with_hosts)
+    num_conv = conversations_with_all_query.count()
+    conversations_with_all = conversations_with_all_query
+
+    for conversation in conversations_with_all:
+        header_message = Message.query \
+            .filter(Message.conversation_id == conversation[0].id) \
+            .order_by(Message.time.desc()) \
+            .first()
+        msg = ""
+        time = ""
+        if header_message:
+            msg = header_message.text
+            time = header_message.time
+        conversation_header_obj = {
+            "name": conversation[2] + conversation[3], 
+            "id": conversation[0].id, 
+            "account_id": conversation[1], 
+            "highlight_message": msg, 
+            "highlight_message_date": time
+        }
+        rv.append(conversation_header_obj)
+    return rv
+
+def get_all_messages_of_conversation(cid, uid):
+    rv = []
+    messages = Conversation.query\
+        .join(Message, Conversation.id == Message.conversation_id) \
+        .join(Accounts, Accounts.id == Message.sender_id) \
+        .add_columns(Accounts.id==uid, Message.text, Message.time, Accounts.first_name, Accounts.last_name) \
+        .filter(Conversation.id == cid) \
+        .order_by(Message.time)\
+        .all()
+    for m in messages:
+        rv.append({
+            "is_me":m[1],
+            "text":m[2],
+            "time":m[3],
+            "name":m[4]+m[5]
+        })
+    return rv
+
+@app.route('/message', methods=['POST', 'GET'])
+def messagesCRUD():
+    token = request.cookies.get('biazza_token')
+    user = get_user_with_token(token)
+
+    # If the user could not be found in the db make them login
+    if not user:
+        return Response(status=404)
+    
+    if request.method == 'POST':
+        text = request.form['text']
+        conversation_id = request.form['conversation_id']
+        time = datetime.now()
+        text = request.form['text']
+
+        message = Message(conversation_id=conversation_id, text=text, time=time, sender_id=user.id)
+        db.session.add(message)
+        db.session.commit()
+
+        account_sender = Accounts.query.filter(Accounts.id == user.id).first()
+        name_of_sender = account_sender.first_name + ' ' + account_sender.last_name
+
+        emit_message(conversation_id, message, name_of_sender)
+
+        return Response(status=200)
+
+
+@app.route('/conversation', methods=['GET', 'POST'])
+def conversationsCRUD():
+    token = request.cookies.get('biazza_token')
+    user = get_user_with_token(token)
+
+    # If the user could not be found in the db make them login
+    if not user:
+        return Response(status=404)
+
+    if request.method == 'GET':
+        conversation_id = request.args['conversation_id']
+        conversation = Conversation.query.filter(Conversation.id == conversation_id).first()
+        if not conversation:
+            return Response(status=404)
+
+        data = get_all_messages_of_conversation(conversation_id, user.id)
+        return jsonify(data)
+
+    elif request.method == 'POST':
+        user_guest_id = request.form['guest_user']
+        conversation = Conversation(user_owner_id=user.id, user_guest_id=user_guest_id)
+        db.session.add(conversation)
+        db.session.commit()
+        return jsonify({
+            "id":conversation.id
+        })
 
 
 @app.route('/home/questions', methods=['GET', 'POST'])

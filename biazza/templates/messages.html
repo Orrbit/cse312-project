@@ -18,8 +18,7 @@
     <script src="/include/jquery.min.js"></script>
     <script src="/include/bootstrap.js"></script>
     <script src="/include/popper.min.js"></script>
-    
-    <script src="/messages.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/2.3.0/socket.io.js"></script>
 
     <title>&#127345;iazza</title>
   </head>
@@ -81,18 +80,30 @@
                         <div class="message-container container">
                             
 
-                            {% for user in conversation_users %}
-                                <div user_id="{{ user.id|e }}" class="row">
-                                    <div class="col-9">
-                                        <h5>{{ user.first_name|e }} {{ user.last_name|e }}</h5>
-                                    </div>
-                                    <div class="col-3">
-                                        <p>3/9/20</p>
+                            {% for conversation in conversations_with_all %}
+                                <div conversation_id="{{ conversation.id|e }}" id="conversation-block-{{ conversation.id|e }}" class="row conversation-block border border-dark py-3 " >
+                                    <div user_id="{{ conversation.account_id|e }}" class="col-12">
+                                        <h5>{{ conversation.name|e }}</h5>
                                     </div>
                                     <div class="col-12">
-                                        <p>Hey Alice. Nothing much, I've just been...</p>
+                                        <p class="conversation-text">
+                                            {% if conversation.highlight_message %}
+                                                {{ conversation.highlight_message|e }}
+                                            {% else %}
+                                                <b>Send your first message!</b>
+                                            {% endif %}
+                                        </p>
                                     </div>
-                                    <a href="#" class="stretched-link"></a>
+                                    <div class="col-8">
+                                        <small class="conversation-time">
+                                            {% if conversation.highlight_message_date %}
+                                                {{ conversation.highlight_message_date|e }}
+                                            {% endif %}
+                                        </small>
+                                    </div>
+                                    <div class="col-4">
+                                        <span class="badge badge-warning"><i class="fas fa-star"></i></span>
+                                    </div>
                                 </div>
                             {% else %}
                                 <em>No current conversations</em>
@@ -111,30 +122,30 @@
                 <p>stuff</p>
             </div> -->
 
-            <div class="card-body container scroll-view">
-                <div class="d-flex justify-content-begin align-items-center">
-                    <div class="message bg-light border border-dark rounded-top rounded-right mb-3 p-3">
-                        <h6>Alice Doe</h6>
-                        <div>Hi Barry! What's up?</div>
-                        <small>3/9/20 1:00 p.m.</small>
-                    </div>
-                </div>
+            <div class="card-body container scroll-view" id="messages-holder">
 
-                <div class="d-flex justify-content-end align-items-center">
-                    <div class="message bg-primary border rounded-top rounded-left mb-3 p-3 text-light">
-                        <div>Hey Alice. Nothing much, I've just been working on the messages page.</div>
-                        <small>3/9/20 1:10 p.m.</small>
+                {% for message in messages_of_top_conversation %}
+                {% if message.is_me %}
+                    <div class="d-flex justify-content-end align-items-center">
+                        <div class="message bg-primary border rounded-top rounded-left mb-3 p-3 text-light">
+                {% else %}
+                    <div class="d-flex justify-content-begin align-items-center">
+                        <div class="message bg-light border border-dark rounded-top rounded-right mb-3 p-3">
+                {% endif %}
+                    
+                            <h6>{{ message.name|e }}</h6>
+                            <div>{{ message.text|e }}</div>
+                            <small>{{ message.time|e }}</small>
+                        </div>
                     </div>
-                </div>
-
-                
+                {% endfor %}
             </div>
 
             <div class="card-footer bg-light">
                 <div class="input-group">
-                    <input type="text" class="form-control mr-3 rounded" placeholder="Message...">
+                    <input type="text" class="form-control mr-3 rounded" placeholder="Message..." id="message-content">
                     <div class="input-group-append my-auto">
-                        <button class="btn btn-ico btn-outline-primary rounded-circle" id="messages-search">
+                        <button class="btn btn-ico btn-outline-primary rounded-circle" id="message-send">
                             <i class="fas fa-paper-plane"></i>
                         </button>
                     </div>
@@ -144,4 +155,12 @@
 
     </div>
   </body>
+
+  <script>
+    let myUserID = {{ uid }};
+    let current_conversation_id = {% if conversations_with_all %}{{conversations_with_all[0]["id"]|e}}{% else %}-1{% endif %};
+    </script>
+
+    <script src="/messages.js"></script>
+    <script src="/room-logic.js"></script>
 </html>
