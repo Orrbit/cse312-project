@@ -6,7 +6,7 @@ from werkzeug.utils import secure_filename
 from biazza import app, ALLOWED_EXTENSIONS
 from biazza.models import Attachment, Comment, Question, Accounts, Conversation, Message, db
 from sqlalchemy.orm import aliased
-from sqlalchemy import or_, join
+from sqlalchemy import or_, join, not_, and_
 from biazza.socket_handlers import emit_comment, emit_question
 from biazza.token_util import create_token_for_user, table_contains_token, get_user_with_token, delete_token
 import os
@@ -167,29 +167,67 @@ def messages():
     if not user:
         return render_template("login.html")
 
-    conversations_with_guests = Conversation.query\
-        .join(Accounts, Conversation.user_guest_id == Accounts.id) \
-        .add_columns(Conversation.id, Accounts.first_name, Accounts.last_name)\
-        .filter(Conversation.user_owner_id == user.id)
-    conversations_with_hosts = Conversation.query\
-        .join(Accounts, Conversation.user_owner_id == Accounts.id) \
-        .add_columns(Conversation.id, Accounts.first_name, Accounts.last_name)\
-        .filter(Conversation.user_guest_id == user.id)
-    conversations_with_all = conversations_with_guests.union(conversations_with_hosts).all()
+    # Getting the conversations for the side bar
+
+    conversation_summary = get_users_conversation_bar(user.id)
+
 
     users_to_start_conversation = Accounts.query.filter(Accounts.id != user.id)
 
-    messages_of_top_conversations = Conversation.query\
-        .join(Message, Conversation.id == Message.conversation_id) \
-        .join(Accounts, Accounts.id == Message.sender_id) \
-        .add_columns(Accounts.id==user.id, Message.text, Message.time, Accounts.first_name, Accounts.last_name) \
-        .filter(Conversation.id == conversations_with_all[0][0].id) \
-        .order_by(Message.time)\
-        .all()
+    messages_of_top_conversation = get_all_messages_of_conversation(conversation_summary[0]["id"], user.id)
+
+    print(messages_of_top_conversation)
 
     return render_template('messages.html', potential_conversation_users=users_to_start_conversation,
-                                            conversations_with_all=conversations_with_all,
-                                            messages_of_top_conversations=messages_of_top_conversations)
+                                            conversations_with_all=conversation_summary,
+                                            messages_of_top_conversation=messages_of_top_conversation)
+
+def get_users_conversation_bar(uid):
+    rv = []
+    conversations_with_guests = Conversation.query\
+        .join(Accounts, Conversation.user_guest_id == Accounts.id) \
+        .add_columns(Conversation.id, Accounts.first_name, Accounts.last_name)\
+        .filter(Conversation.user_owner_id == uid)
+    conversations_with_hosts = Conversation.query\
+        .join(Accounts, Conversation.user_owner_id == Accounts.id) \
+        .add_columns(Conversation.id, Accounts.first_name, Accounts.last_name)\
+        .filter(Conversation.user_guest_id == uid)
+    conversations_with_all_query = conversations_with_guests.union(conversations_with_hosts)
+    num_conv = conversations_with_all_query.count()
+    conversations_with_all = conversations_with_all_query
+
+    for conversation in conversations_with_all:
+        header_message = Message.query \
+            .filter(Message.conversation_id == conversation[0].id) \
+            .order_by(Message.time) \
+            .first()
+        conversation_header_obj = {
+            "name": conversation[2] + conversation[3], 
+            "id": conversation[0].id, 
+            "account_id": conversation[1], 
+            "highlight_message": header_message.text or "", 
+            "highlight_message_date": header_message.time or ""
+        }
+        rv.append(conversation_header_obj)
+    return rv
+
+def get_all_messages_of_conversation(cid, uid):
+    rv = []
+    messages = Conversation.query\
+        .join(Message, Conversation.id == Message.conversation_id) \
+        .join(Accounts, Accounts.id == Message.sender_id) \
+        .add_columns(Accounts.id==uid, Message.text, Message.time, Accounts.first_name, Accounts.last_name) \
+        .filter(Conversation.id == cid) \
+        .order_by(Message.time)\
+        .all()
+    for m in messages:
+        rv.append({
+            "is_me":m[1],
+            "text":m[2],
+            "time":m[3],
+            "name":m[4]+m[5]
+        })
+    return rv
 
 @app.route('/message', methods=['POST', 'GET'])
 def messagesCRUD():
@@ -227,16 +265,7 @@ def conversationsCRUD():
         if not conversation:
             return Response(status=404)
 
-        messages = Message.query.filter(Message.conversation_id == conversation_id).all()
-        data = []
-        for message in messages:
-            message_data = {
-                "message_id": message.id,
-                "text": message.text,
-                "time": message.time,
-                "sender_id": message.sender_id
-            }
-            data.append(message_data)
+        data = get_all_messages_of_conversation(conversation_id, user.id)
         return jsonify(data)
 
     elif request.method == 'POST':

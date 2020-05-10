@@ -85,17 +85,26 @@
                             
 
                             {% for conversation in conversations_with_all %}
-                                <div conversation_id="{{ conversation[0].id|e }}" class="row conversation-block">
-                                    <div user_id="{{ conversation[1]|e }}" class="col-12">
-                                        <h5>{{ conversation[2]|e }} {{ conversation[3]|e }}</h5>
+                                <div conversation_id="{{ conversation.id|e }}" class="row conversation-block border border-dark py-3 " >
+                                    <div user_id="{{ conversation.account_id|e }}" class="col-12">
+                                        <h5>{{ conversation.name|e }}</h5>
                                     </div>
                                     <div class="col-12">
-                                        <p>{{ messages_of_top_conversations[-1][2]|e }}</p>
+                                        <p>
+                                            {% if conversation.highlight_message %}
+                                                {{ conversation.highlight_message|e }}
+                                            {% else %}
+                                                <b>Send your first message!</b>
+                                            {% endif %}
+                                        </p>
                                     </div>
                                     <div class="col-12">
-                                        <small>{{ messages_of_top_conversations[-1][3]|e }}</small>
+                                        <small>
+                                            {% if conversation.highlight_message_date %}
+                                                {{ conversation.highlight_message_date|e }}
+                                            {% endif %}
+                                        </small>
                                     </div>
-                                    <a href="#" class="stretched-link"></a>
                                 </div>
                             {% else %}
                                 <em>No current conversations</em>
@@ -114,10 +123,10 @@
                 <p>stuff</p>
             </div> -->
 
-            <div class="card-body container scroll-view">
+            <div class="card-body container scroll-view" id="messages-holder">
 
-                {% for message in messages_of_top_conversations %}
-                {% if message[1] %}
+                {% for message in messages_of_top_conversation %}
+                {% if message.is_me %}
                     <div class="d-flex justify-content-end align-items-center">
                         <div class="message bg-primary border rounded-top rounded-left mb-3 p-3 text-light">
                 {% else %}
@@ -125,9 +134,9 @@
                         <div class="message bg-light border border-dark rounded-top rounded-right mb-3 p-3">
                 {% endif %}
                     
-                            <h6>{{ message[4]|e }} {{ message[5]|e }}</h6>
-                            <div>{{ message[2]|e }}</div>
-                            <small>{{ message[3]|e }}</small>
+                            <h6>{{ message.name|e }}</h6>
+                            <div>{{ message.text|e }}</div>
+                            <small>{{ message.time|e }}</small>
                         </div>
                     </div>
                 {% else %}
