@@ -8,6 +8,7 @@ from biazza.models import Attachment, Comment, Question, Accounts, Conversation,
 from sqlalchemy.orm import aliased
 from sqlalchemy import or_, join, not_, and_
 from biazza.socket_handlers import emit_comment, emit_question
+from biazza.room_handlers import emit_message
 from biazza.token_util import create_token_for_user, table_contains_token, get_user_with_token, delete_token
 import os
 import uuid
@@ -174,13 +175,14 @@ def messages():
 
     users_to_start_conversation = Accounts.query.filter(Accounts.id != user.id)
 
-    messages_of_top_conversation = get_all_messages_of_conversation(conversation_summary[0]["id"], user.id)
-
-    print(messages_of_top_conversation)
+    messages_of_top_conversation = []
+    if conversation_summary:
+        messages_of_top_conversation = get_all_messages_of_conversation(conversation_summary[0]["id"], user.id)
 
     return render_template('messages.html', potential_conversation_users=users_to_start_conversation,
                                             conversations_with_all=conversation_summary,
-                                            messages_of_top_conversation=messages_of_top_conversation)
+                                            messages_of_top_conversation=messages_of_top_conversation,
+                                            uid=user.id)
 
 def get_users_conversation_bar(uid):
     rv = []
@@ -199,14 +201,19 @@ def get_users_conversation_bar(uid):
     for conversation in conversations_with_all:
         header_message = Message.query \
             .filter(Message.conversation_id == conversation[0].id) \
-            .order_by(Message.time) \
+            .order_by(Message.time.desc()) \
             .first()
+        msg = ""
+        time = ""
+        if header_message:
+            msg = header_message.text
+            time = header_message.time
         conversation_header_obj = {
             "name": conversation[2] + conversation[3], 
             "id": conversation[0].id, 
             "account_id": conversation[1], 
-            "highlight_message": header_message.text or "", 
-            "highlight_message_date": header_message.time or ""
+            "highlight_message": msg, 
+            "highlight_message_date": time
         }
         rv.append(conversation_header_obj)
     return rv
@@ -248,6 +255,11 @@ def messagesCRUD():
         db.session.add(message)
         db.session.commit()
 
+        account_sender = Accounts.query.filter(Accounts.id == user.id).first()
+        name_of_sender = account_sender.first_name + ' ' + account_sender.last_name
+
+        emit_message(conversation_id, message, name_of_sender)
+
         return Response(status=200)
 
 @app.route('/conversation', methods=['GET', 'POST'])
@@ -273,7 +285,9 @@ def conversationsCRUD():
         conversation = Conversation(user_owner_id=user.id, user_guest_id=user_guest_id)
         db.session.add(conversation)
         db.session.commit()
-        return Response(status=200)
+        return jsonify({
+            "id":conversation.id
+        })
 
 
 @app.route('/home/questions', methods=['GET', 'POST'])

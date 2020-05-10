@@ -21,5 +21,16 @@ def enter_rooms():
     for c in my_conversations:
         join_room(c.id)
         rooms_joined = rooms_joined + 1
+        print("A user has joined " + str(c.id))
+        emit('room_response', "Joined a room",room=c.id)
 
-    emit('room_response', {"rooms_joined": rooms_joined})
+
+def emit_message(conversation_id, message, sender_name):
+    socketio.emit('message_receive', {
+        "conversation_id": conversation_id,
+        "text": message.text,
+        "time": message.time.isoformat(),
+        "sender_id":message.sender_id,
+        "name": sender_name
+    }, room=int(conversation_id))
+    print("I am trying to emit to " + str(conversation_id))

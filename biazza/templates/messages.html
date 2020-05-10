@@ -19,10 +19,6 @@
     <script src="/include/bootstrap.js"></script>
     <script src="/include/popper.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/2.3.0/socket.io.js"></script>
-    
-    <script src="/messages.js"></script>
-    <script src="/room-logic.js"></script>
-
 
     <title>&#127345;iazza</title>
   </head>
@@ -85,12 +81,12 @@
                             
 
                             {% for conversation in conversations_with_all %}
-                                <div conversation_id="{{ conversation.id|e }}" class="row conversation-block border border-dark py-3 " >
+                                <div conversation_id="{{ conversation.id|e }}" id="conversation-block-{{ conversation.id|e }}" class="row conversation-block border border-dark py-3 " >
                                     <div user_id="{{ conversation.account_id|e }}" class="col-12">
                                         <h5>{{ conversation.name|e }}</h5>
                                     </div>
                                     <div class="col-12">
-                                        <p>
+                                        <p class="conversation-text">
                                             {% if conversation.highlight_message %}
                                                 {{ conversation.highlight_message|e }}
                                             {% else %}
@@ -98,12 +94,15 @@
                                             {% endif %}
                                         </p>
                                     </div>
-                                    <div class="col-12">
-                                        <small>
+                                    <div class="col-8">
+                                        <small class="conversation-time">
                                             {% if conversation.highlight_message_date %}
                                                 {{ conversation.highlight_message_date|e }}
                                             {% endif %}
                                         </small>
+                                    </div>
+                                    <div class="col-4">
+                                        <span class="badge badge-warning"><i class="fas fa-star"></i></span>
                                     </div>
                                 </div>
                             {% else %}
@@ -139,8 +138,6 @@
                             <small>{{ message.time|e }}</small>
                         </div>
                     </div>
-                {% else %}
-                    <em>No messages! Send your first one by typing below!</em>
                 {% endfor %}
             </div>
 
@@ -158,4 +155,12 @@
 
     </div>
   </body>
+
+  <script>
+    let myUserID = {{ uid }};
+    let current_conversation_id = {% if conversations_with_all %}{{conversations_with_all[0]["id"]|e}}{% else %}-1{% endif %};
+    </script>
+
+    <script src="/messages.js"></script>
+    <script src="/room-logic.js"></script>
 </html>
