@@ -249,7 +249,7 @@ def messagesCRUD():
         text = request.form['text']
         conversation_id = request.form['conversation_id']
         time = datetime.now()
-        text = request.form['text']
+        text = replace(request.form['text'])
 
         message = Message(conversation_id=conversation_id, text=text, time=time, sender_id=user.id)
         db.session.add(message)
