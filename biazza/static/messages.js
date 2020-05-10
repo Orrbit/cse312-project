@@ -11,10 +11,10 @@ function createMessageCard(singleMessageData){
   divType = "";
     if(singleMessageData.is_me){
       divType= `<div class="d-flex justify-content-end align-items-center">
-            <div class="message bg-primary border rounded-top rounded-left mb-3 p-3 text-light">`
+            <div class="message bg-primary border rounded-top rounded-left mb-3 mr-3 p-3 text-light">`
     } else {
       divType = `<div class="d-flex justify-content-begin align-items-center">
-      <div class="message bg-light border border-dark rounded-top rounded-right mb-3 p-3">`
+      <div class="message bg-light border border-dark rounded-top rounded-right mb-3 ml-3 p-3">`
     }
     content = divType + `
             <h6>${ singleMessageData.name }</h6>

@@ -122,15 +122,15 @@
                 <p>stuff</p>
             </div> -->
 
-            <div class="card-body container scroll-view" id="messages-holder">
+            <div class="card-body container-fluid scroll-view" id="messages-holder">
 
                 {% for message in messages_of_top_conversation %}
                 {% if message.is_me %}
                     <div class="d-flex justify-content-end align-items-center">
-                        <div class="message bg-primary border rounded-top rounded-left mb-3 p-3 text-light">
+                        <div class="message bg-primary border rounded-top rounded-left mb-3 mr-3 p-3 text-light">
                 {% else %}
                     <div class="d-flex justify-content-begin align-items-center">
-                        <div class="message bg-light border border-dark rounded-top rounded-right mb-3 p-3">
+                        <div class="message bg-light border border-dark rounded-top rounded-right mb-3 ml-3 p-3">
                 {% endif %}
                     
                             <h6>{{ message.name|e }}</h6>
