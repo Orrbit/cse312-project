@@ -16,6 +16,7 @@
     <script src="/include/jquery.min.js"></script>
     <script src="/include/bootstrap.js"></script>
     <script src="/include/popper.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/2.3.0/socket.io.js"></script>
     <script src="/home.js"></script>
   </head>
   <body class="d-flex flex-column">
@@ -57,7 +58,8 @@
 
                 <ul class="navbar-nav mr-auto">
                     <li class="nav-item"><a class="nav-link iframe-sel" onclick="changeIFrame('/home/questions')">Questions</a></li>
-                    <li class="nav-item"><a class="nav-link iframe-sel" onclick="changeIFrame('/home/messages')">Messages</a></li>
+                    <li class="nav-item d-flex"><a class="nav-link iframe-sel" onclick="changeIFrame('/home/messages')">Messages</a>
+                        <span id="messagesNotification" class="badge badge-info invisible" style="height: fit-content">0</span> </li>
                     <li class="nav-item"><a class="nav-link iframe-sel" onclick="changeIFrame('/home/assignments')">Assignments</a></li>
                     <li class="nav-item"><a class="nav-link iframe-sel" onclick="changeIFrame('/home/classroom')">Classroom</a> </li>
                 </ul>
