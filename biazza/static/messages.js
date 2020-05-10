@@ -73,7 +73,7 @@ $(document).ready(function(){
 
     $.post( "/message", {text: text, conversation_id: current_conversation_id}, function(response) {})
       .fail(function() {
-        alert( "There was an error starting a new conversation" );
+        alert( "There was an error sending a message" );
       });
   })
 });

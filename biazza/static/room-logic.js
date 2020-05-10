@@ -34,5 +34,5 @@ function joinAllConversationRooms() {
     socket.emit('enter_rooms')
 }
 
-setTimeout(joinAllConversationRooms, 5000);
+setInterval(joinAllConversationRooms, 5000);
 
