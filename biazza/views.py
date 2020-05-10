@@ -4,7 +4,7 @@ from flask import Blueprint, flash, Markup, redirect, render_template, url_for, 
 from werkzeug.utils import secure_filename
 # from biazza.database import db_session
 from biazza import app, ALLOWED_EXTENSIONS
-from biazza.models import Attachment, Comment, Question, Accounts, Conversation, Message, db
+from biazza.models import Attachment, Comment, Question, Accounts, Conversation, Message, Followers, db
 from sqlalchemy.orm import aliased
 from sqlalchemy import or_, join, not_, and_
 from biazza.socket_handlers import emit_comment, emit_question
@@ -16,9 +16,9 @@ import bcrypt
 import re
 from datetime import datetime
 
+
 @app.route('/', methods=['GET', 'POST'])
 def home():
-
     if request.method == 'GET':
         print("IN GET")
         token = request.cookies.get('biazza_token')
@@ -26,7 +26,7 @@ def home():
         if token and get_user_with_token(token):
             return redirect('/home')
         return render_template("login.html")
-    
+
     else:
         form_data = request.form
 
@@ -40,7 +40,7 @@ def home():
 
         # verify that the user is present in the database if not present stay, else go to the home page
 
-        emails_query = Accounts.query.filter_by(email = email).first()
+        emails_query = Accounts.query.filter_by(email=email).first()
 
         if emails_query is None:
             return jsonify("email_not_found")
@@ -63,7 +63,6 @@ def home():
 
 @app.route('/signup', methods=['GET', 'POST'])
 def handle_signup():
-
     # print("WHERE TF YOU AT")
     # print(request.form)
 
@@ -72,7 +71,7 @@ def handle_signup():
     else:
         # This part will handle validation of signup requests
 
-        form_data = request.form 
+        form_data = request.form
 
         email = form_data.get("email")
         first_name = form_data.get("firstName")
@@ -81,8 +80,8 @@ def handle_signup():
 
         # check password strength. Conditions to check. Size >= 8, One big char, One number, One special char
         check_size = (len(password) >= 8)
-        check_cap  = True
-        check_num  = True
+        check_cap = True
+        check_num = True
         check_spec = True
         check_lower = True
 
@@ -92,19 +91,20 @@ def handle_signup():
 
         if not any(x.islower() for x in password):
             check_lower = False
-        
+
         # check number
         if not any(x.isdigit() for x in password):
             check_num = False
 
         # check special char
-        string_check= re.compile('[@_!#$%^&*()<>?/\|}{~:]') 
-        if(string_check.search(password) == None):
+        string_check = re.compile('[@_!#$%^&*()<>?/\|}{~:]')
+        if (string_check.search(password) == None):
             check_spec = False
 
         # return a json string
-        if((check_size and check_cap and check_num and check_spec) == False):
-            return jsonify({"size" : check_size, "cap" : check_cap, "num" : check_num, "spec" : check_spec, "lower": check_lower})
+        if ((check_size and check_cap and check_num and check_spec) == False):
+            return jsonify(
+                {"size": check_size, "cap": check_cap, "num": check_num, "spec": check_spec, "lower": check_lower})
 
         # change all emails for Injection
         email = replace(email)
@@ -118,7 +118,7 @@ def handle_signup():
         password = bcrypt.hashpw(password, bcrypt.gensalt())
 
         # check with database if email is taken.
-        emails_query = Accounts.query.filter_by(email = email).first()
+        emails_query = Accounts.query.filter_by(email=email).first()
 
         # if not taken, use bcrypt to hasha + salt the password
         if emails_query is None:
@@ -126,7 +126,7 @@ def handle_signup():
 
             # insert the user data into the mySQL table
             # store the new email + rest in the data base
-            to_insert = Accounts(email = email, first_name = first_name, last_name = last_name, password = password)
+            to_insert = Accounts(email=email, first_name=first_name, last_name=last_name, password=password)
             result = db.session.add(to_insert)
             db.session.commit()
 
@@ -139,10 +139,9 @@ def handle_signup():
         # if taken, send message to user that the email is taken
         else:
             print("EMAIL FOUND")
-            
+
             # send invalid or error request to the client
             return jsonify("email_found")
-
 
 
 @app.route('/home')
@@ -174,6 +173,7 @@ def messages():
 
 
     users_to_start_conversation = Accounts.query.filter(Accounts.id != user.id)
+
 
     messages_of_top_conversation = []
     if conversation_summary:
@@ -262,6 +262,7 @@ def messagesCRUD():
 
         return Response(status=200)
 
+
 @app.route('/conversation', methods=['GET', 'POST'])
 def conversationsCRUD():
     token = request.cookies.get('biazza_token')
@@ -291,7 +292,7 @@ def conversationsCRUD():
 
 
 @app.route('/home/questions', methods=['GET', 'POST'])
-def questions():
+def questions_handler():
     if request.method == 'GET':
 
         token = request.cookies.get('biazza_token')
@@ -301,7 +302,17 @@ def questions():
         if not user:
             return render_template("login.html")
 
-        questions = Question.query.all()
+        questions = []
+        questions_filter = request.args.get("filter")
+        if not questions_filter or questions_filter == 'all':
+            questions_filter = 'all'
+            questions = Question.query.all()
+        elif questions_filter == 'following':
+            questions = Question.query.filter(
+                Question.user_id.in_(db.session.query(Followers.leader).filter(Followers.follower == user.id))).all()
+        elif questions_filter == 'me':
+            questions = Question.query.filter(Question.user_id == user.id).all()
+
         questions.reverse()
 
         top_question = None
@@ -309,16 +320,18 @@ def questions():
 
         if questions:
             top_question = questions[0]
-            comments = Comment.query.filter(Comment.question_id == top_question.id)
+            comments = Comment.query.filter(Comment.question_id == top_question.id).all()
 
             top_question_poster = Accounts.query.filter(Accounts.id == top_question.user_id).first()
             top_question.user_name = top_question_poster.first_name + ' ' + top_question_poster.last_name
 
-        for c in comments:
-            c.all_attachments = Attachment.query.filter(Attachment.comment_id == c.id)
-            comment_poster = Accounts.query.filter(Accounts.id == c.user_id).first()
-            c.user_name = comment_poster.first_name + ' ' + comment_poster.last_name
-        return render_template('questions.html', comments=comments, questions=questions, top_question=top_question)
+        for i in range(len(comments)):
+            comments[i].all_attachments = Attachment.query.filter(Attachment.comment_id == comments[i].id)
+            comment_poster = Accounts.query.filter(Accounts.id == comments[i].user_id).first()
+            comments[i].user_name = comment_poster.first_name + ' ' + comment_poster.last_name
+
+        return render_template('questions.html', comments=comments, questions=questions, top_question=top_question,
+                               filter=questions_filter)
 
     elif request.method == 'POST':
 
@@ -341,6 +354,20 @@ def questions():
             return jsonify({'success': True})
         else:
             return Response(status=400)
+
+
+@app.route('/home/conversation', methods=['POST'])
+def conversations():
+    token = request.cookies.get('biazza_token')
+    user = get_user_with_token(token)
+
+    user_guest_id = request.form['guest_user']
+    conversation = Conversation(user_owner_id=user.id, user_guest_id=user_guest_id)
+    db.session.add(conversation)
+    db.session.commit()
+
+    return jsonify({'success': True})
+
 
 @app.route('/home/questions/<int:q_id>')
 def get_question(q_id):
@@ -457,11 +484,105 @@ def post_comment_to_question(q_id):
     return jsonify({'success': True})
 
 
+@app.route('/home/questions/<int:q_id>/<f>')
+def question_filter_status(q_id, f):
+    token = request.cookies.get('biazza_token')
+    user = get_user_with_token(token)
+
+    # If the user could not be found in the db make them login
+    if not user:
+        return render_template("login.html")
+
+    question = Question.query.filter(Question.id == q_id).first()
+
+    if not question:
+        return jsonify(False), 404
+
+    if f == 'me':
+        return jsonify(question.user_id == user.id)
+    elif f == 'following':
+        return jsonify(not Followers.query.filter(Followers.follower == user.id,
+                                                  Followers.leader == question.user_id).first() is None)
+
+    return jsonify(False), 404
+
+
 @app.route('/logout')
 def handle_logout():
     token = request.cookies.get('biazza_token')
     delete_token(token)
     return render_template('login.html')
+
+
+@app.route('/home/classroom')
+def handle_classroom():
+    token = request.cookies.get('biazza_token')
+    user = get_user_with_token(token)
+
+    # If the user could not be found in the db make them login
+    if not user:
+        return render_template("login.html")
+
+    all_users_query = Accounts.query.all()
+    following = []
+    all_users = []
+
+    for u in all_users_query:
+        if Followers.query.filter(Followers.follower == user.id, Followers.leader == u.id).first():
+            following.append(u)
+            u.following = True
+        all_users.append(u)
+
+    following = sorted(following, key=lambda leader: leader.last_name)
+    all_users = sorted(all_users, key=lambda au: au.last_name)
+
+    return render_template('classroom.html', classroom=all_users, client=user, following=following)
+
+
+@app.route('/follow', methods=['POST'])
+def follow_user():
+    token = request.cookies.get('biazza_token')
+    user = get_user_with_token(token)
+
+    # If the user could not be found in the db make them login
+    if not user:
+        return render_template("login.html")
+
+    data = request.get_json()
+    leader = Accounts.query.filter(Accounts.id == data['id']).first()
+    leader_obj = {'last_name': leader.last_name, 'first_name': leader.first_name, 'id': leader.id,
+                  'email': leader.email}
+
+    if Followers.query.filter(Followers.follower == user.id, Followers.leader == data['id']).first():
+        return jsonify({'success': 200, 'user': leader_obj}), 200
+
+    if not leader:
+        return jsonify({'success': 404}), 404
+
+    db.session.add(Followers(follower=user.id, leader=data['id']))
+    db.session.commit()
+
+    return jsonify({'success': 200, 'user': leader_obj}), 200
+
+
+@app.route('/unfollow', methods=['POST'])
+def unfollow_user():
+    token = request.cookies.get('biazza_token')
+    user = get_user_with_token(token)
+
+    # If the user could not be found in the db make them login
+    if not user:
+        return render_template("login.html")
+
+    data = request.get_json()
+
+    follow_obj = Followers.query.filter(Followers.follower == user.id, Followers.leader == data['id']).first()
+
+    if follow_obj:
+        db.session.delete(follow_obj)
+        db.session.commit()
+
+    return jsonify({'success': 200}), 200
 
 
 # when a connection closes, the db session will also close

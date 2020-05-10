@@ -1,5 +1,16 @@
 const socket = io();
 
+let queryParams = new URLSearchParams(window.location.search);
+let filter = 'all';
+if(queryParams.has('filter')){
+    let f_param = queryParams.get('filter');
+    if(f_param === 'me'){
+        filter = 'me';
+    } else if(f_param === 'following'){
+        filter = 'following';
+    }
+}
+
 //Socket Listeners
 //Log connection
 socket.on('connect', () => {
@@ -19,7 +30,22 @@ socket.on('question_emit', (data) => {
     title = title.replace(">", "&gt;"); title = title.replace("<", "&lt;"); title = title.replace("&", "&amp;");
 
     let html = '<a class="list-group-item list-group-item-action" data-toggle="list" role="tab" id="' + q_id + '">' + title + '</a>'
-    $('#questionsPane').prepend(html);
+
+    if(filter === 'all'){
+        $('#questionsPane').prepend(html);
+    } else {
+        $.ajax({
+            method: 'GET',
+            url: '/home/questions/' + q_id + '/' + filter,
+            success: function (data) {
+                if (data === true){
+                    $('#questionsPane').prepend(html);
+                }
+            }
+        });
+    }
+
+
 });
 
 //Receive comment
@@ -28,7 +54,7 @@ socket.on('comment_emit', (data) => {
     console.log("comment: " + JSON.stringify(data));
 
 
-    if ($('.active').attr('id') == data['qid']) {
+    if ($('.active.list-group-item.list-group-item-action').attr('id') == data['qid']) {
         let msg = data['text'];
         msg = msg.replace(">", "&gt;"); msg = msg.replace("<", "&lt;"); msg = msg.replace("&", "&amp;");
 
@@ -84,12 +110,12 @@ socket.on('like_status', function (data) {
 $(document).ready(function () {
     //POST comment
     $("#add-comment").submit(function () {
-        var form = $('#add-comment')[0];
-        var userInput = new FormData(form);
+        let form = $('#add-comment')[0];
+        let userInput = new FormData(form);
 
         console.log("User Input : " + userInput);
 
-        var q_id = $('.active').attr('id');
+        let q_id = $('.active.list-group-item.list-group-item-action').attr('id');
 
         $.ajax({
             type: "POST",
