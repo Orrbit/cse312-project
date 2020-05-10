@@ -95,19 +95,19 @@
                             <div class="dropdown-menu" aria-labelledby="dropdownMenuButton">
                                 {% if filter == 'all' %}
                                     <a class="dropdown-item active" href="/home/questions">All Questions</a>
-                                    <a class="dropdown-item" href="/home/questions?filter=following">Friends' Questions</a>
+                                    <a class="dropdown-item" href="/home/questions?filter=following">People You Follow</a>
                                     <a class="dropdown-item" href="/home/questions?filter=me">My Questions</a>
                                 {% elif filter == 'following' %}
                                     <a class="dropdown-item" href="/home/questions">All Questions</a>
-                                    <a class="dropdown-item active" href="/home/questions?filter=following">Friends' Questions</a>
+                                    <a class="dropdown-item active" href="/home/questions?filter=following">People You Follow</a>
                                     <a class="dropdown-item" href="/home/questions?filter=me">My Questions</a>
                                 {% elif filter == 'me' %}
                                     <a class="dropdown-item" href="/home/questions">All Questions</a>
-                                    <a class="dropdown-item" href="/home/questions?filter=following">Friends' Questions</a>
+                                    <a class="dropdown-item" href="/home/questions?filter=following">People You Follow</a>
                                     <a class="dropdown-item active" href="/home/questions?filter=me">My Questions</a>
                                 {% else %}
                                     <a class="dropdown-item" href="/home/questions">All Questions</a>
-                                    <a class="dropdown-item" href="/home/questions?filter=following">Friends' Questions</a>
+                                    <a class="dropdown-item" href="/home/questions?filter=following">People You Follow</a>
                                     <a class="dropdown-item" href="/home/questions?filter=me">My Questions</a>
                                 {% endif %}
                             </div>
