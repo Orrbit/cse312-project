@@ -7,7 +7,7 @@ tasks for us. Using this framework, we are able to quickly route requests and se
 
 **Flask Source Code** - (https://github.com/pallets/flask/)
 
-# Phase 1 & PHASE 2; SEE TEMPLATES
+# Phase 1 & PHASE 2; SEE TEMPLATES & PHASE 3; SEE ROOMS
 
 As of Phase 1, we are using flask to listen for, handle, and serve up http requests. These requests are primarily for HTML, CSS, and JS
 files. However, it does have the ability to serve up a variety of files such as svgs if we choose to include those.
@@ -95,6 +95,20 @@ def assignments():
   ```
   
   We are giving the html render function a list of questions. Inside eacho one of thes questions, we have an id that we need to assign to the id attribute of our a tag and we also have the question title that will need to be displayed as inner html of the tag. This will help users that are just loading the html page get content that is up to date with what the database has insead of just seeing static content.
+  
+ ### Rooms
+ 
+  We are using the room functionality of socketio. This lets us subscribe users to a multiple chat rooms. In order to make the messages private, we are only sending dms to rooms which the users are part of. We can see this here.
+  
+```python
+for c in my_conversations:
+        join_room(c.id)
+        rooms_joined = rooms_joined + 1
+        emit('room_response', "Joined a room",room=c.id)
+```
+  We are using the conversation id as the key to this room. This is secure because only the server can subscribe a client to a room.
+  
+  Flask will keep track of these rooms inside of the app in order to determine what socket ids are part of which rooms. This makes it very easy for us to securely utilise.
   
  ## How is flask completing these three tasks?
  
