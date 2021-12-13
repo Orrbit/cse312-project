@@ -1,6 +1,6 @@
 Flask==1.0.2
 Flask-SocketIO==4.2.1
-lxml==4.5.0
+lxml==4.6.5
 eventlet==0.25.1
 Flask-SQLAlchemy==2.4.1
 mysqlclient==1.4.6
